@@ -1,0 +1,58 @@
+//
+// Copyright 2020 Iskandar Abudiab (iabudiab.dev)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+import Foundation
+
+public extension {{ type.group }}.{{ type.version }} {
+
+	{{ resource|R.renderDescription }}
+	struct {{ type.kind }}: KubernetesResource, Codable {
+	{% for property in resource.properties %}
+		{{ property|P.renderDescription }}
+		{{ property|P.render}}
+	{% endfor %}
+	}
+}
+{% if resource.requiresCodableExtension %}
+extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
+
+	private enum CodingKeys: String, CodingKey {
+{% for property in resource.properties %}
+{% if not property.constValue %}
+		case {{ property.name|P.escapeKeywords }} = "{{ property.name }}"
+{% endif %}
+{% endfor %}
+	}
+
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+{% for property in resource.properties %}
+{% if not property.constValue %}
+		self.{{ property.name|P.escapeKeywords }} = try container.{% if property.required %}decode{% else %}decodeIfPresent{% endif %}({{ property|P.type }}.self, forKey: .{{ property.name|P.escapeKeywords }})
+{% endif %}
+{% endfor %}
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+{% for property in resource.properties %}
+{% if not property.constValue %}
+		try container.encode(self.{{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }})
+{% endif %}
+{% endfor %}
+	}
+}
+{% endif %}
