@@ -29,6 +29,14 @@ extension Extension {
 			return "///\n\t/// \(indented)\n\t///"
 		}
 
+		registerFilter("R.protocols") { input in
+			guard let schema = input as? Resource else {
+				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
+			}
+			let list = schema.listResource ? ", KubernetesResourceList" : ""
+			return "KubernetesResource\(list)"
+		}
+
 		registerFilter("P.renderDescription") { input in
 			guard let property = input as? Property else {
 				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
@@ -92,6 +100,13 @@ extension Extension {
 			}
 
 			return name
+		}
+
+		registerFilter("GVK.case") { input in
+			guard let gvk = input as? GroupVersion else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersion: \(String(describing: input))")
+			}
+			return "\(gvk.renderedCase)"
 		}
 	}
 }

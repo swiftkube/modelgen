@@ -28,6 +28,13 @@ extension String {
 		return String(dropFirst(prefix.count))
 	}
 
+	func deletingSuffix(_ suffix: String) -> String {
+		guard hasSuffix(suffix) else {
+			return self
+		}
+		return String(dropLast(suffix.count))
+	}
+
 	func cleanupWhitespace() -> String {
 		let regex = try! NSRegularExpression(pattern: #"^\n\s*\n"#, options: .anchorsMatchLines)
 		return regex.stringByReplacingMatches(

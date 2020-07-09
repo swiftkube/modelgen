@@ -19,11 +19,15 @@ import Foundation
 public extension {{ type.group }}.{{ type.version }} {
 
 	{{ resource|R.renderDescription }}
-	struct {{ type.kind }}: KubernetesResource, Codable {
-	{% for property in resource.properties %}
+	struct {{ type.kind }}: {{ resource|R.protocols }} {
+{% if resource.listResource %}
+		typealias Resource = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+{% endif %}
+
+{% for property in resource.properties %}
 		{{ property|P.renderDescription }}
 		{{ property|P.render}}
-	{% endfor %}
+{% endfor %}
 	}
 }
 {% if resource.requiresCodableExtension %}
@@ -53,6 +57,15 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 		try container.encode(self.{{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }})
 {% endif %}
 {% endfor %}
+	}
+}
+{% endif %}{% if resource.listResource %}
+extension {{ type.group }}.{{ type.version }}.{{ type.kind }}: Sequence {
+
+	public typealias Element = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+
+	public func makeIterator() -> AnyIterator<{{ type.group }}.{{ type.version }}.{{ type.listItemKind }}> {
+		return AnyIterator(self.items.makeIterator())
 	}
 }
 {% endif %}

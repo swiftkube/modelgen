@@ -255,6 +255,39 @@ struct GroupVersionKind: Decodable {
 	let group: String
 	let version: String
 	let kind: String
+
+	func makeGroupVersion() -> GroupVersion {
+		return GroupVersion(group: group, version: version)
+	}
+}
+
+struct GroupVersion: Hashable, Comparable {
+	let group: String
+	let version: String
+
+	var renderedCase: String {
+		return group == ""
+			? "core\(version.capitalized)"
+			: "\(String(group.prefix(while: { $0 != "." })))\(version.capitalized)"
+	}
+
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(group)
+		hasher.combine(version)
+	}
+
+	static func < (lhs: GroupVersion, rhs: GroupVersion) -> Bool {
+		switch (lhs, rhs) {
+		case let (lhs, rhs) where lhs.group < rhs.group:
+			return true
+		case let (lhs, rhs) where lhs.group > rhs.group:
+			return false
+		case let (lhs, rhs) where lhs.group == rhs.group:
+			return lhs.version < rhs.version
+		default:
+			return true
+		}
+	}
 }
 
 private let TypePrefixes = Set([
@@ -269,6 +302,7 @@ struct TypeReference: Hashable {
 	let group: String
 	let version: String
 	let kind: String
+	let listItemKind: String
 
 	init(ref: String) {
 		let sanitized = ref.deletingPrefix("#/definitions/")
@@ -282,6 +316,7 @@ struct TypeReference: Hashable {
 		self.group = String(gvk[0])
 		self.version = String(gvk[1])
 		self.kind = String(gvk[2])
+		self.listItemKind = self.kind.deletingSuffix("List")
 	}
 
 	func renderedApiVersion() -> String {
@@ -301,6 +336,7 @@ struct Resource: Decodable {
 	let required: [String]
 	var properties: [Property]
 	var requiresCodableExtension: Bool
+	var listResource: Bool
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -319,6 +355,7 @@ struct Resource: Decodable {
 			self.required = []
 			self.properties = []
 			self.requiresCodableExtension = false
+			self.listResource = false
 			return
 		}
 
@@ -331,6 +368,7 @@ struct Resource: Decodable {
 		self.deprecated = (self.description.range(of: "deprecated", options: .caseInsensitive) != nil)
 		self.properties = []
 		self.requiresCodableExtension = false
+		self.listResource = false
 
 		guard container.allKeys.contains(.properties) else {
 			return
@@ -359,6 +397,7 @@ struct Resource: Decodable {
 
 		self.properties.append(contentsOf: props.sorted())
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
+		self.listResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 	}
 }
 

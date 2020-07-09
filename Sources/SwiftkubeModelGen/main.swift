@@ -81,6 +81,9 @@ struct ModelGen: ParsableCommand {
 		}
 		try outputPath.mkpath()
 
+		let allGroupVersions = Set(schemas.definitions.compactMap { $1.gvk?.makeGroupVersion() })
+		try renderAPIGroupEnum(outputPath: outputPath, allGroupVersions: allGroupVersions, environment: environment)
+
 		try schemas.definitions
 			.filter { $0.value.type != .null }
 			.forEach { key, resource in
@@ -118,6 +121,13 @@ struct ModelGen: ParsableCommand {
 		try versionFilePath.write(versionSwift, encoding: .utf8)
 	}
 
+	private func renderAPIGroupEnum(outputPath: Path, allGroupVersions: Set<GroupVersion>, environment: Environment) throws {
+		let context = ["allGroupVersions": allGroupVersions.sorted()]
+		let rendered = try environment.renderTemplate(name: "APIVersionEnum.swift.stencil", context: context)
+		let filePath = outputPath + Path("APIVersion.swift")
+		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
+	}
+
 	private func renderResource(outputPath: Path, typeReference: TypeReference, environment: Environment, context: [String: Any]) throws {
 		let rendered = try environment.renderTemplate(name: "Resource.swift.stencil", context: context)
 		let gvPath = outputPath + Path(typeReference.group) + Path(typeReference.version)
@@ -126,4 +136,8 @@ struct ModelGen: ParsableCommand {
 	}
 }
 
-ModelGen.main()
+ModelGen.main([
+	"-a", "v1.16.4",
+	"-t", "/Users/iska/Basement/swiftkube/modelgen/templates",
+	"-o", "/Users/iska/Basement/swiftkube/modelgen/out"
+])
