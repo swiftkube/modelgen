@@ -21,7 +21,7 @@ public extension {{ type.group }}.{{ type.version }} {
 	{{ resource|R.renderDescription }}
 	struct {{ type.kind }}: {{ resource|R.protocols }} {
 {% if resource.listResource %}
-		typealias Resource = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+		public typealias Resource = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
 {% endif %}
 
 {% for property in resource.properties %}

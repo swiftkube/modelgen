@@ -19,19 +19,19 @@ import Foundation
 ///
 /// API Groups
 ///
-enum APIGroup: CustomStringConvertible {
+public enum APIGroup: CustomStringConvertible {
 {% for gvk in allGroupVersions %}
 	case {{ gvk|GVK.case }}{% endfor %}
 	case custom(group: String, version: String)
 
-	var description: String {
+	public var description: String {
 		guard group != "" else {
 			return version
 		}
 		return "\(group)/\(version)"
 	}
 
-	var group: String {
+	public var group: String {
 		switch self {
 {% for gvk in allGroupVersions %}
 		case .{{ gvk|GVK.case }}:
@@ -41,7 +41,7 @@ enum APIGroup: CustomStringConvertible {
 		}
 	}
 
-	var version: String {
+	public var version: String {
 		switch self {
 {% for gvk in allGroupVersions %}
 		case .{{ gvk|GVK.case }}:

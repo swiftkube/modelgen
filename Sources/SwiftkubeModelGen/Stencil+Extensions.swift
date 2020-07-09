@@ -79,7 +79,7 @@ extension Extension {
 				return " = \(rendered)"
 			}()
 
-			return "\(varOrLet) \(name): \(type)\(value)"
+			return "public \(varOrLet) \(name): \(type)\(value)"
 		}
 
 		registerFilter("P.type") { input in
