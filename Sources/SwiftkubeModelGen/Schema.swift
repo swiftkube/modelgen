@@ -264,6 +264,19 @@ struct GroupVersionKind: Decodable {
 struct GroupVersion: Hashable, Comparable {
 	let group: String
 	let version: String
+	let urlPath: String
+
+	init(group: String, version: String) {
+		self.group = group
+		self.version = version
+		self.urlPath = {
+			if group == "" {
+				return "/api/\(version)"
+			} else {
+				return "/apis/\(group)/\(version)"
+			}
+		}()
+	}
 
 	var renderedCase: String {
 		return group == ""

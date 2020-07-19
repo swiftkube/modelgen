@@ -31,6 +31,16 @@ public enum APIGroup: CustomStringConvertible {
 		return "\(group)/\(version)"
 	}
 
+	public var urlPath: String {
+		switch self {
+{% for gvk in allGroupVersions %}
+		case .{{ gvk|GVK.case }}:
+			return "{{ gvk.urlPath }}"{% endfor %}
+		case let .custom(group, _):
+			return group
+		}
+	}
+
 	public var group: String {
 		switch self {
 {% for gvk in allGroupVersions %}

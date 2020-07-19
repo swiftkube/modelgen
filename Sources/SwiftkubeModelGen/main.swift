@@ -123,8 +123,8 @@ struct ModelGen: ParsableCommand {
 
 	private func renderAPIGroupEnum(outputPath: Path, allGroupVersions: Set<GroupVersion>, environment: Environment) throws {
 		let context = ["allGroupVersions": allGroupVersions.sorted()]
-		let rendered = try environment.renderTemplate(name: "APIVersionEnum.swift.stencil", context: context)
-		let filePath = outputPath + Path("APIVersion.swift")
+		let rendered = try environment.renderTemplate(name: "APIGroupVersionEnum.swift.stencil", context: context)
+		let filePath = outputPath + Path("APIGroupVersion.swift")
 		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
 	}
 
