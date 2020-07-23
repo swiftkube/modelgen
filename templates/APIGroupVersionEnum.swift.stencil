@@ -19,7 +19,7 @@ import Foundation
 ///
 /// API Groups
 ///
-public enum APIGroup: CustomStringConvertible {
+public enum APIGroupVersion: CustomStringConvertible {
 {% for gvk in allGroupVersions %}
 	case {{ gvk|GVK.case }}{% endfor %}
 	case custom(group: String, version: String)
