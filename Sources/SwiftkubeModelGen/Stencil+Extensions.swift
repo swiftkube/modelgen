@@ -82,6 +82,26 @@ extension Extension {
 			return "public \(varOrLet) \(name): \(type)\(value)"
 		}
 
+		registerFilter("P.renderArg") { input in
+			guard let property = input as? Property else {
+				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+			}
+
+			let name = { () -> String in
+				let name = property.name!
+				let keywords = Set(["continue", "default", "operator", "protocol"])
+				guard !keywords.contains(name) else {
+					return "`\(name)`"
+				}
+				return name
+			}()
+
+			let optional = property.isOptional ? "?" : ""
+			let type = "\(property.type.renderedType)\(optional)"
+
+			return "\(name): \(type)"
+		}
+
 		registerFilter("P.type") { input in
 			guard let property = input as? Property else {
 				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
