@@ -102,6 +102,18 @@ extension Extension {
 			return "\(name): \(type)"
 		}
 
+		registerFilter("P.renderArgDefaultNil") { input in
+			guard let property = input as? Property else {
+				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+			}
+
+			if property.isOptional {
+				return " = nil"
+			}
+
+			return ""
+		}
+
 		registerFilter("P.type") { input in
 			guard let property = input as? Property else {
 				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
