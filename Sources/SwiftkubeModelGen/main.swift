@@ -137,7 +137,5 @@ struct ModelGen: ParsableCommand {
 }
 
 ModelGen.main([
-	"-a", "v1.16.4",
-	"-t", "/Users/iska/Basement/swiftkube/modelgen/templates",
-	"-o", "/Users/iska/Basement/swiftkube/modelgen/out"
+
 ])
