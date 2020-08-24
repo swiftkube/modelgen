@@ -33,8 +33,15 @@ extension Extension {
 			guard let schema = input as? Resource else {
 				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
 			}
-			let list = schema.listResource ? ", KubernetesResourceList" : ""
-			return "KubernetesResource\(list)"
+			var protocols = ["KubernetesResource"]
+			if schema.listResource {
+				protocols.append("KubernetesResourceList")
+			}
+			if schema.hasMetadata {
+				protocols.append("ResourceWithMetadata")
+			}
+
+			return protocols.joined(separator: ", ")
 		}
 
 		registerFilter("P.renderDescription") { input in

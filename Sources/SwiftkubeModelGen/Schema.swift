@@ -81,6 +81,15 @@ indirect enum PropertyType {
 		}
 	}
 
+	var isMetadata: Bool {
+		switch self {
+		case let .ref(typeRef: typeRef) where typeRef.kind == "ObjectMeta":
+			return true
+		default:
+			return false
+		}
+	}
+
 	init(from type: Type, container: KeyedDecodingContainer<Property.CodingKeys>) throws {
 		switch type {
 		case .string:
@@ -349,6 +358,7 @@ struct Resource: Decodable {
 	let required: [String]
 	var properties: [Property]
 	var requiresCodableExtension: Bool
+	var hasMetadata: Bool
 	var listResource: Bool
 
 	enum CodingKeys: String, CodingKey {
@@ -368,6 +378,7 @@ struct Resource: Decodable {
 			self.required = []
 			self.properties = []
 			self.requiresCodableExtension = false
+			self.hasMetadata = false
 			self.listResource = false
 			return
 		}
@@ -381,6 +392,7 @@ struct Resource: Decodable {
 		self.deprecated = (self.description.range(of: "deprecated", options: .caseInsensitive) != nil)
 		self.properties = []
 		self.requiresCodableExtension = false
+		self.hasMetadata = false
 		self.listResource = false
 
 		guard container.allKeys.contains(.properties) else {
@@ -410,6 +422,7 @@ struct Resource: Decodable {
 
 		self.properties.append(contentsOf: props.sorted())
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
+		self.hasMetadata = properties.contains { $0.type.isMetadata && $0.isOptional }
 		self.listResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 	}
 }
