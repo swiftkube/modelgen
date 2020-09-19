@@ -63,11 +63,12 @@ struct ModelGen: ParsableCommand {
 	var output: String
 
 	@Flag(help: "Clear output directory")
-	var clear: Bool
+	var clear: Bool = false
 
 	mutating func run() throws {
 		let templatesPath = Path(templates).absolute()
 		let outputPath = Path(output).absolute()
+		print("Generating model version: \(apiVersion) using templates at: [\(templatesPath)], output path: [\(outputPath)]")
 
 		guard !outputPath.exists || clear else {
 			throw ModelGenError.RuntimeError(message: "Output directory arleady exists and clear flag is not set")
