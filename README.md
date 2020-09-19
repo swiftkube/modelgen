@@ -11,3 +11,19 @@ This tool converts Kuberentes JSON schema definitions hosted at [https://kuberne
 - Performance
 - Reusability
 - Clean code
+
+## Build
+
+Clone this repository and run:
+
+```shell
+swift build
+```
+
+## Usage
+
+Run the script:
+
+```shell
+SwiftkubeModelGen --api-version v1.418.4 --templates templates/model --output <path for generated model>
+```
