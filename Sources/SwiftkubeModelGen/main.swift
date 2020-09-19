@@ -49,7 +49,7 @@ func loadAndDecodeJson<T: Decodable>(url: URL, type: T.Type) throws -> T {
 
 struct ModelGen: ParsableCommand {
 	static let configuration = CommandConfiguration(
-		commandName: "modelgen",
+		commandName: "SwiftkubeModelGen",
 		subcommands: []
 	)
 
