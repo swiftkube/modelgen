@@ -17,7 +17,7 @@
 import Foundation
 
 ///
-/// API Groups
+/// API Group Versions
 ///
 public enum APIGroupVersion: CustomStringConvertible {
 {% for gvk in allGroupVersions %}
@@ -35,14 +35,18 @@ public enum APIGroupVersion: CustomStringConvertible {
 		return apiVersion
 	}
 
-	public var urlPath: String {
+	public var urlPathPrefix: String {
 		switch self {
-{% for gvk in allGroupVersions %}
-		case .{{ gvk|GVK.case }}:
-			return "{{ gvk.urlPath }}"{% endfor %}
-		case let .custom(group, _):
-			return group
+
+		case .coreV1:
+			return "/api/v1"
+		default:
+			return "/apis"
 		}
+	}
+
+	public var urlPath: String {
+		return "\(urlPathPrefix)/\(apiVersion)"
 	}
 
 	public var group: String {
