@@ -137,6 +137,4 @@ struct ModelGen: ParsableCommand {
 	}
 }
 
-ModelGen.main([
-
-])
+ModelGen.main()
