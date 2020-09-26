@@ -41,7 +41,10 @@ public extension {{ type.group }}.{{ type.version }} {
 		}
 	}
 }
-{% if resource.requiresCodableExtension %}
+{% if resource.properties.count > 0 %}
+///
+/// Codable conformance
+///
 extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 
 	private enum CodingKeys: String, CodingKey {
@@ -51,7 +54,7 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 {% endif %}
 {% endfor %}
 	}
-
+{% if resource.requiresCodableExtension %}
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 {% for property in resource.properties %}
@@ -69,8 +72,12 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 {% endif %}
 {% endfor %}
 	}
-}
-{% endif %}{% if resource.listResource %}
+{% endif %}
+}{% endif %}
+{% if resource.listResource %}
+///
+/// Sequence iterator for KubernetesResourceList items
+///
 extension {{ type.group }}.{{ type.version }}.{{ type.kind }}: Sequence {
 
 	public typealias Element = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
