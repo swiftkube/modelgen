@@ -4,7 +4,7 @@ Kuberentes API resources model generator for [Swiftkube:Model](https://github.co
 
 ## Overview
 
-This tool converts Kuberentes JSON schema definitions hosted at [https://kubernetesjsonschema.dev](https://kubernetesjsonschema.dev) into Swift structs using Stencil templates.
+This tool converts Kuberentes JSON schema definitions into Swift structs using Stencil templates. The JSON definitions are mapped from their openAPI counterparts via [openapi2jsonschema](https://github.com/instrumenta/openapi2jsonschema).
 
 ## Non-goals:
 
