@@ -8,13 +8,15 @@ let package = Package(
 	dependencies: [
 		.package(url: "https://github.com/apple/swift-argument-parser", from: "0.3.0"),
 		.package(url: "https://github.com/stencilproject/Stencil", from: "0.13.1"),
+		.package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0")
 	],
 	targets: [
 		.target(
 			name: "SwiftkubeModelGen",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
-				.product(name: "Stencil", package: "Stencil")
+				.product(name: "Stencil", package: "Stencil"),
+				.product(name: "ShellOut", package: "ShellOut"),
 			]
 		),
 	]

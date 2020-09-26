@@ -21,30 +21,10 @@ import FoundationNetworking
 import ArgumentParser
 import Stencil
 import PathKit
+import ShellOut
 
 enum ModelGenError: Error {
 	case RuntimeError(message: String)
-}
-
-let baseUrl = URL(string: "https://kubernetesjsonschema.dev")!
-
-func versionedUrl(version: String) -> URL {
-	return baseUrl.appendingPathComponent(version)
-}
-
-func allTypesUrl(version: String) -> URL {
-	return versionedUrl(version: version).appendingPathComponent("all.json")
-}
-
-func definitionsUrl(version: String) -> URL {
-	return versionedUrl(version: version).appendingPathComponent("_definitions.json")
-}
-
-func loadAndDecodeJson<T: Decodable>(url: URL, type: T.Type) throws -> T {
-	guard let data = try String(contentsOf: url, encoding: .utf8).data(using: .utf8) else {
-		throw ModelGenError.RuntimeError(message: "Error decoding JSON")
-	}
-	return try JSONDecoder().decode(type, from: data)
 }
 
 struct ModelGen: ParsableCommand {
@@ -74,7 +54,8 @@ struct ModelGen: ParsableCommand {
 			throw ModelGenError.RuntimeError(message: "Output directory arleady exists and clear flag is not set")
 		}
 
-		let schemas = try loadAndDecodeJson(url: definitionsUrl(version: apiVersion), type: Definitions.self)
+		let definitionsPath = try generateJSONSchema(outputPath: outputPath)
+		let schemas = try loadAndDecodeJson(url: definitionsPath.url, type: Definitions.self)
 		let environment = makeStencilEnv(templatesPath: templatesPath)
 
 		if clear {
@@ -97,6 +78,27 @@ struct ModelGen: ParsableCommand {
 				try makeDirectories(outputPath: outputPath, typeReference: typeReference, environment: environment)
 				try renderResource(outputPath: outputPath, typeReference: typeReference, environment: environment, context: context)
 		}
+	}
+
+	private func generateJSONSchema(outputPath: Path) throws -> Path {
+		let jsonSchemaPath = outputPath + Path("schema-\(apiVersion)")
+		let openAPIURL = "https://raw.githubusercontent.com/kubernetes/kubernetes/\(apiVersion)/api/openapi-spec/swagger.json"
+
+		let _ = try shellOut(to: "/usr/local/bin/openapi2jsonschema", arguments: [
+			"--expanded", "--kubernetes",
+			"--prefix", "https://swiftkube.dev/schema/\(apiVersion)/_definitions.json",
+			"-o", jsonSchemaPath.absolute().string,
+			openAPIURL
+		])
+
+		return jsonSchemaPath + Path("_definitions.json")
+	}
+
+	private func loadAndDecodeJson<T: Decodable>(url: URL, type: T.Type) throws -> T {
+		guard let data = try String(contentsOf: url, encoding: .utf8).data(using: .utf8) else {
+			throw ModelGenError.RuntimeError(message: "Error decoding JSON")
+		}
+		return try JSONDecoder().decode(type, from: data)
 	}
 
 	private func makeStencilEnv(templatesPath: Path) -> Environment {
