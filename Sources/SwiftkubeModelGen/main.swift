@@ -29,7 +29,7 @@ enum ModelGenError: Error {
 
 struct ModelGen: ParsableCommand {
 	static let configuration = CommandConfiguration(
-		commandName: "SwiftkubeModelGen",
+		commandName: "swiftkube-modelgen",
 		subcommands: []
 	)
 
@@ -64,7 +64,7 @@ struct ModelGen: ParsableCommand {
 		try outputPath.mkpath()
 
 		let allGroupVersions = Set(schemas.definitions.compactMap { $1.gvk?.makeGroupVersion() })
-		try renderAPIGroupEnum(outputPath: outputPath, allGroupVersions: allGroupVersions, environment: environment)
+		try renderAPIVersions(outputPath: outputPath, allGroupVersions: allGroupVersions, environment: environment)
 
 		try schemas.definitions
 			.filter { $0.value.type != .null }
@@ -72,7 +72,8 @@ struct ModelGen: ParsableCommand {
 				let typeReference = TypeReference(ref: key)
 				let context: [String: Any] = [
 					"type": typeReference,
-					"resource": resource
+					"resource": resource,
+					"meta": ["modelVersion": apiVersion],
 				]
 
 				try makeDirectories(outputPath: outputPath, typeReference: typeReference, environment: environment)
@@ -112,22 +113,30 @@ struct ModelGen: ParsableCommand {
 		let groupPath = outputPath + Path(typeReference.group)
 		try groupPath.mkpath()
 
-		let groupSwift = try environment.renderTemplate(name: "Group.swift.stencil", context: ["type": typeReference])
+		let context: [String: Any] = [
+			"type": typeReference,
+			"meta": ["modelVersion": apiVersion]
+		]
+
+		let groupSwift = try environment.renderTemplate(name: "Group.swift.stencil", context: context)
 		let groupFilePath = groupPath + Path("\(typeReference.group).swift")
 		try groupFilePath.write(groupSwift, encoding: .utf8)
 
 		let groupVersionPath = groupPath + Path(typeReference.version)
 		try groupVersionPath.mkpath()
 
-		let versionSwift = try environment.renderTemplate(name: "Version.swift.stencil", context: ["type": typeReference])
+		let versionSwift = try environment.renderTemplate(name: "Version.swift.stencil", context: context)
 		let versionFilePath = groupVersionPath + Path("\(typeReference.group)+\(typeReference.version).swift")
 		try versionFilePath.write(versionSwift, encoding: .utf8)
 	}
 
-	private func renderAPIGroupEnum(outputPath: Path, allGroupVersions: Set<GroupVersion>, environment: Environment) throws {
-		let context = ["allGroupVersions": allGroupVersions.sorted()]
-		let rendered = try environment.renderTemplate(name: "APIGroupVersionEnum.swift.stencil", context: context)
-		let filePath = outputPath + Path("APIGroupVersion.swift")
+	private func renderAPIVersions(outputPath: Path, allGroupVersions: Set<GroupVersion>, environment: Environment) throws {
+		let context: [String : Any] = [
+			"meta": ["modelVersion": apiVersion],
+			"allGroupVersions": allGroupVersions.sorted()
+			]
+		let rendered = try environment.renderTemplate(name: "APIVersion.swift.stencil", context: context)
+		let filePath = outputPath + Path("APIVersion.swift")
 		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
 	}
 

@@ -287,10 +287,26 @@ struct GroupVersion: Hashable, Comparable {
 		}()
 	}
 
+	var renderedGroup: String {
+		return group == ""
+			? "core"
+			: "\(String(group.prefix(while: { $0 != "." })))"
+	}
+
+	var renderedVersion: String {
+		return version
+	}
+
 	var renderedCase: String {
 		return group == ""
 			? "core\(version.capitalized)"
 			: "\(String(group.prefix(while: { $0 != "." })))\(version.capitalized)"
+	}
+
+	var renderedFull: String {
+		return group == ""
+			? "\(version)"
+			: "\(group)/\(version)"
 	}
 
 	func hash(into hasher: inout Hasher) {
