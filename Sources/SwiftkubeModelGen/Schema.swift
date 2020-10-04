@@ -376,6 +376,7 @@ struct Resource: Decodable {
 	var requiresCodableExtension: Bool
 	var hasMetadata: Bool
 	var listResource: Bool
+	var isAPIResource: Bool
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -396,6 +397,7 @@ struct Resource: Decodable {
 			self.requiresCodableExtension = false
 			self.hasMetadata = false
 			self.listResource = false
+			self.isAPIResource = false
 			return
 		}
 
@@ -410,6 +412,7 @@ struct Resource: Decodable {
 		self.requiresCodableExtension = false
 		self.hasMetadata = false
 		self.listResource = false
+		self.isAPIResource = false
 
 		guard container.allKeys.contains(.properties) else {
 			return
@@ -440,6 +443,10 @@ struct Resource: Decodable {
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
 		self.hasMetadata = properties.contains { $0.type.isMetadata && $0.isOptional }
 		self.listResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
+		self.isAPIResource =
+			!self.listResource &&
+			properties.contains(where: { $0.name == "apiVersion" && $0.isContant }) &&
+			properties.contains(where: { $0.name == "kind" && $0.isContant })
 	}
 }
 

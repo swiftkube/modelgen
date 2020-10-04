@@ -40,6 +40,9 @@ extension Extension {
 			if schema.hasMetadata {
 				protocols.append("ResourceWithMetadata")
 			}
+			if schema.isAPIResource {
+				protocols.append("KubernetesAPIResource")
+			}
 
 			return protocols.joined(separator: ", ")
 		}
