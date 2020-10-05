@@ -30,6 +30,8 @@ public extension {{ type.group }}.{{ type.version }} {
 		public typealias Resource = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
 {% endif %}
 
+{{ resource|R.staticAPIVersion }}
+
 {% for property in resource.properties %}
 		{{ property|P.renderDescription }}
 		{{ property|P.render}}{% endfor %}

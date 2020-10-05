@@ -47,6 +47,28 @@ extension Extension {
 			return protocols.joined(separator: ", ")
 		}
 
+		registerFilter("R.staticAPIVersion") { input in
+			guard let schema = input as? Resource else {
+				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
+			}
+
+			guard let gv = schema.gvk?.makeGroupVersion() else {
+				return ""
+			}
+
+			guard schema.isAPIResource else {
+				return ""
+			}
+
+			let apiVersion = gv.renderedCase
+			return """
+					///
+					/// APIVersion of this Kubernetes API Resource.
+					///
+					public static let apiVersion: APIVersion = .\(apiVersion)
+			"""
+}
+
 		registerFilter("P.renderDescription") { input in
 			guard let property = input as? Property else {
 				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
