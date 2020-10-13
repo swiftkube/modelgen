@@ -34,14 +34,17 @@ extension Extension {
 				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
 			}
 			var protocols = ["KubernetesResource"]
-			if schema.listResource {
+			if schema.isListResource {
 				protocols.append("KubernetesResourceList")
-			}
-			if schema.hasMetadata {
-				protocols.append("ResourceWithMetadata")
 			}
 			if schema.isAPIResource {
 				protocols.append("KubernetesAPIResource")
+			}
+			if schema.hasMetadata {
+				protocols.append("MetadataHavingResource")
+			}
+			if schema.isListableResource {
+				protocols.append("ListableResource")
 			}
 
 			return protocols.joined(separator: ", ")
@@ -67,15 +70,21 @@ extension Extension {
 					///
 					public static let apiVersion: APIVersion = .\(apiVersion)
 			"""
-}
+		}
 
 		registerFilter("P.renderDescription") { input in
 			guard let property = input as? Property else {
 				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
 			}
+			let indentedNewLine = "\n\t\t///"
 			let description = property.description
-			let indented = description.replacingOccurrences(of: "\n", with: "\n\t\t/// ")
-			return "///\n\t\t/// \(indented)\n\t\t///"
+			let indented = description.replacingOccurrences(of: "\n", with: "\(indentedNewLine) ")
+
+			return """
+					///
+					/// \(indented)
+					///
+			"""
 		}
 
 		registerFilter("P.render") { input in

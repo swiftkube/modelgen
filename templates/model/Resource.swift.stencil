@@ -26,14 +26,29 @@ public extension {{ type.group }}.{{ type.version }} {
 
 	{{ resource|R.renderDescription }}
 	struct {{ type.kind }}: {{ resource|R.protocols }} {
-{% if resource.listResource %}
-		public typealias Resource = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+{% if resource.isListResource %}
+
+		///
+		/// KubernetesResourceList.Item associated type
+		///
+		public typealias Item = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+{% endif %}
+{% if resource.isListableResource %}
+
+		///
+		/// ListableResource.List associated type
+		///
+		public typealias List = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}List
+		///
+		/// The type of the associated KubernetesResourceList
+		///
+		public static let listType: List.Type = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}List.self
 {% endif %}
 
 {{ resource|R.staticAPIVersion }}
 
 {% for property in resource.properties %}
-		{{ property|P.renderDescription }}
+{{ property|P.renderDescription }}
 		{{ property|P.render}}{% endfor %}
 		///
 		/// Default memberwise initializer

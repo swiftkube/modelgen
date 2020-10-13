@@ -54,17 +54,24 @@ struct ModelGen: ParsableCommand {
 			throw ModelGenError.RuntimeError(message: "Output directory arleady exists and clear flag is not set")
 		}
 
-		let definitionsPath = try generateJSONSchema(outputPath: outputPath)
-		let schemas = try loadAndDecodeJson(url: definitionsPath.url, type: Definitions.self)
-		let environment = makeStencilEnv(templatesPath: templatesPath)
-
 		if clear {
 			try outputPath.delete()
 		}
 		try outputPath.mkpath()
 
+		let environment = makeStencilEnv(templatesPath: templatesPath)
+		let definitionsPath = try generateJSONSchema(outputPath: outputPath)
+		var schemas = try loadAndDecodeJson(url: definitionsPath.url, type: Definitions.self)
+
 		let allGroupVersions = Set(schemas.definitions.compactMap { $1.gvk?.makeGroupVersion() })
 		try renderAPIVersions(outputPath: outputPath, allGroupVersions: allGroupVersions, environment: environment)
+
+		schemas.definitions
+			.filter { $0.value.isListResource }
+			.forEach { key, resource in
+				let itemKind = key.deletingSuffix("List")
+				schemas.definitions[itemKind]?.isListableResource = true
+			}
 
 		try schemas.definitions
 			.filter { $0.value.type != .null }

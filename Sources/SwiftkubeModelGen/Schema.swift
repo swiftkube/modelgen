@@ -375,8 +375,9 @@ struct Resource: Decodable {
 	var properties: [Property]
 	var requiresCodableExtension: Bool
 	var hasMetadata: Bool
-	var listResource: Bool
+	var isListResource: Bool
 	var isAPIResource: Bool
+	var isListableResource: Bool
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -396,8 +397,9 @@ struct Resource: Decodable {
 			self.properties = []
 			self.requiresCodableExtension = false
 			self.hasMetadata = false
-			self.listResource = false
+			self.isListResource = false
 			self.isAPIResource = false
+			self.isListableResource = false
 			return
 		}
 
@@ -411,8 +413,9 @@ struct Resource: Decodable {
 		self.properties = []
 		self.requiresCodableExtension = false
 		self.hasMetadata = false
-		self.listResource = false
+		self.isListResource = false
 		self.isAPIResource = false
+		self.isListableResource = false
 
 		guard container.allKeys.contains(.properties) else {
 			return
@@ -442,11 +445,12 @@ struct Resource: Decodable {
 		self.properties.append(contentsOf: props.sorted())
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
 		self.hasMetadata = properties.contains { $0.type.isMetadata && $0.isOptional }
-		self.listResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
+		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 		self.isAPIResource =
-			!self.listResource &&
+			!self.isListResource &&
 			properties.contains(where: { $0.name == "apiVersion" && $0.isContant }) &&
 			properties.contains(where: { $0.name == "kind" && $0.isContant })
+		self.isListableResource = false
 	}
 }
 
