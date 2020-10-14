@@ -97,7 +97,7 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 	}
 {% endif %}
 }{% endif %}
-{% if resource.listResource %}
+{% if resource.isListResource %}
 ///
 /// Sequence iterator for KubernetesResourceList items
 ///
