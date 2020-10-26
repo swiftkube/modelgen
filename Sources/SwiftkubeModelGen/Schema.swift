@@ -444,7 +444,7 @@ struct Resource: Decodable {
 
 		self.properties.append(contentsOf: props.sorted())
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
-		self.hasMetadata = properties.contains { $0.type.isMetadata && $0.isOptional }
+		self.hasMetadata = properties.contains { $0.type.isMetadata }
 		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 		self.isAPIResource =
 			!self.isListResource &&
