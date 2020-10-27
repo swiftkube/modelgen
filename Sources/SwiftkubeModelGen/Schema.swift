@@ -48,6 +48,19 @@ private let IgnoredTypes = Set([
 	"io.k8s.apimachinery.pkg.util.intstr.IntOrString",
 ])
 
+private let SpecialAPITypes = Set([
+	"io.k8s.apimachinery.pkg.apis.meta.v1.APIVersions",
+	"io.k8s.apimachinery.pkg.apis.meta.v1.APIResourceList",
+	"io.k8s.apimachinery.pkg.apis.meta.v1.APIResource",
+	"io.k8s.apimachinery.pkg.apis.meta.v1.APIGroupList",
+	"io.k8s.apimachinery.pkg.apis.meta.v1.APIGroup"
+])
+
+private let NonAPITypes = Set([
+	"io.k8s.apimachinery.pkg.apis.meta.v1.Status",
+	"io.k8s.apimachinery.pkg.apis.meta.v1.DeleteOptions"
+])
+
 enum Type: String, Decodable {
 	case string, integer, number, boolean, null, array, object
 }
@@ -260,13 +273,24 @@ struct DynamicCodingKeys: CodingKey {
 	}
 }
 
-struct GroupVersionKind: Decodable {
+struct GroupVersionKind: Decodable, Hashable, Comparable {
 	let group: String
 	let version: String
 	let kind: String
 
 	func makeGroupVersion() -> GroupVersion {
 		return GroupVersion(group: group, version: version)
+	}
+
+	static func < (lhs: GroupVersionKind, rhs: GroupVersionKind) -> Bool {
+		switch (lhs.makeGroupVersion(), rhs.makeGroupVersion()) {
+		case let (l, r) where l.group < r.group:
+			return true
+		case let (l, r) where l.group > r.group:
+			return false
+		default:
+			return lhs.kind < rhs.kind
+		}
 	}
 }
 
@@ -335,12 +359,14 @@ private let TypePrefixes = Set([
 	"io.k8s.kube-aggregator.pkg.apis.",
 ])
 
-struct TypeReference: Hashable {
+struct TypeReference: Hashable, Comparable {
 	let ref: String
 	let group: String
 	let version: String
+	let gv: GroupVersion
 	let kind: String
 	let listItemKind: String
+	let apiVersion: String
 
 	init(ref: String) {
 		let sanitized = ref.deletingPrefix("#/definitions/")
@@ -354,30 +380,36 @@ struct TypeReference: Hashable {
 		self.group = String(gvk[0])
 		self.version = String(gvk[1])
 		self.kind = String(gvk[2])
+		self.gv = GroupVersion(group: group, version: version)
 		self.listItemKind = self.kind.deletingSuffix("List")
+
+		if group == "core" {
+			self.apiVersion = version
+		} else {
+			self.apiVersion = "\(group)/\(version)"
+		}
 	}
 
-	func renderedApiVersion() -> String {
-		if group == "core" {
-			return version
-		}
-		return "\(group)/\(version)"
+	static func < (lhs: TypeReference, rhs: TypeReference) -> Bool {
+		let lgvk = GroupVersionKind(group: lhs.group, version: lhs.version, kind: lhs.kind)
+		let rgvk = GroupVersionKind(group: rhs.group, version: rhs.version, kind: rhs.kind)
+		return lgvk < rgvk
 	}
 }
 
-struct Resource: Decodable {
+struct Resource: Decodable, Comparable {
 
 	let gvk: GroupVersionKind?
 	let type: Type
 	let description: String
-	let deprecated: Bool
 	let required: [String]
 	var properties: [Property]
-	var requiresCodableExtension: Bool
-	var hasMetadata: Bool
-	var isListResource: Bool
-	var isAPIResource: Bool
-	var isListableResource: Bool
+	var deprecated: Bool = false
+	var requiresCodableExtension: Bool = false
+	var hasMetadata: Bool = false
+	var isListResource: Bool = false
+	var isAPIResource: Bool = false
+	var isListableResource: Bool = false
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -388,18 +420,14 @@ struct Resource: Decodable {
 	}
 
 	init(from decoder: Decoder) throws {
-		if let _ = IgnoredTypes.first(where: { decoder.codingPath.last?.stringValue.hasPrefix($0) ?? false }) {
+		let resourceKey = decoder.codingPath.last?.stringValue
+
+		if let _ = IgnoredTypes.first(where: { resourceKey?.hasPrefix($0) ?? false }) {
 			self.gvk = nil
 			self.type = .null
 			self.description = ""
-			self.deprecated = false
 			self.required = []
 			self.properties = []
-			self.requiresCodableExtension = false
-			self.hasMetadata = false
-			self.isListResource = false
-			self.isAPIResource = false
-			self.isListableResource = false
 			return
 		}
 
@@ -411,11 +439,6 @@ struct Resource: Decodable {
 		self.required = try container.decodeIfPresent([String].self, forKey: .required) ?? []
 		self.deprecated = (self.description.range(of: "deprecated", options: .caseInsensitive) != nil)
 		self.properties = []
-		self.requiresCodableExtension = false
-		self.hasMetadata = false
-		self.isListResource = false
-		self.isAPIResource = false
-		self.isListableResource = false
 
 		guard container.allKeys.contains(.properties) else {
 			return
@@ -448,9 +471,36 @@ struct Resource: Decodable {
 		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 		self.isAPIResource =
 			!self.isListResource &&
+			!SpecialAPITypes.contains(resourceKey ?? "") &&
+			!NonAPITypes.contains(resourceKey ?? "") &&
 			properties.contains(where: { $0.name == "apiVersion" && $0.isContant }) &&
 			properties.contains(where: { $0.name == "kind" && $0.isContant })
-		self.isListableResource = false
+	}
+
+	static func < (lhs: Resource, rhs: Resource) -> Bool {
+		switch (lhs.gvk?.makeGroupVersion(), rhs.gvk?.makeGroupVersion()) {
+		case let (.some(a), .some(b)):
+			return a < b
+		case (.some(_), .none):
+			return true
+		case (.none, .some(_)):
+			return false
+		default:
+			return false
+		}
+	}
+
+	static func == (lhs: Resource, rhs: Resource) -> Bool {
+		switch (lhs.gvk, rhs.gvk) {
+		case let (.some(a), .some(b)):
+			return a == b
+		case (.some(_), .none):
+			return false
+		case (.none, .some(_)):
+			return false
+		default:
+			return false
+		}
 	}
 }
 

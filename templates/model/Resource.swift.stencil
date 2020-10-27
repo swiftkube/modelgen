@@ -39,13 +39,7 @@ public extension {{ type.group }}.{{ type.version }} {
 		/// ListableResource.List associated type
 		///
 		public typealias List = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}List
-		///
-		/// The type of the associated KubernetesResourceList
-		///
-		public static let listType: List.Type = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}List.self
 {% endif %}
-
-{{ resource|R.staticAPIVersion }}
 
 {% for property in resource.properties %}
 {{ property|P.renderDescription }}
