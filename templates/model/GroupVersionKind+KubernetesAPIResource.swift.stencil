@@ -19,16 +19,31 @@
 /// Kubernetes {{meta.modelVersion}}
 ///
 
-public extension APIVersion {
+import Foundation
 
+public extension GroupVersionKind {
+
+	/// Creates a new instance of `GroupVersionKind` for the given `KubernetesAPIResource`.
+	///
+	/// - Parameter resource: An instance of a `KubernetesAPIResource`
+	init?<R: KubernetesAPIResource>(of resource: R) {
+		if let gvk = GroupVersionKind.init(rawValue: "\(resource.apiVersion)/\(resource.kind)") {
+			self = gvk
+		} else {
+			return nil
+		}
+	}
+
+	/// Creates a new instance of `GroupVersionKind` for the given `KubernetesAPIResource` type.
+	///
+	/// - Parameter type: A type of a `KubernetesAPIResource`, e.g. `core.v1.Pod.self`.
 	init?<R: KubernetesAPIResource>(of type: R.Type) {
 		switch type {
-{% for type in allAPITypes %}
-		case is {{ type.group }}.{{ type.version }}.{{ type.kind }}.Type:
-			self = .{{ type.gv|GVK.case }}{% endfor %}
+{% for gvk in allGVK %}
+		case is {{ gvk|GVK.type }}.Type:
+			self = .{{ gvk|GVK.case }}{% endfor %}
 		default:
 			return nil
 		}
 	}
 }
-

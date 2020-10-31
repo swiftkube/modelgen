@@ -154,31 +154,38 @@ extension Extension {
 		}
 
 		registerFilter("GVK.group") { input in
-			guard let gvk = input as? GroupVersion else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersion: \(String(describing: input))")
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedGroup)"
 		}
 
 		registerFilter("GVK.version") { input in
-			guard let gvk = input as? GroupVersion else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersion: \(String(describing: input))")
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedVersion)"
 		}
 
 		registerFilter("GVK.case") { input in
-			guard let gvk = input as? GroupVersion else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersion: \(String(describing: input))")
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedCase)"
 		}
 
 		registerFilter("GVK.full") { input in
-			guard let gvk = input as? GroupVersion else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersion: \(String(describing: input))")
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedFull)"
+		}
+
+		registerFilter("GVK.type") { input in
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+			}
+			return "\(gvk.renderedTypeCase)"
 		}
 	}
 }

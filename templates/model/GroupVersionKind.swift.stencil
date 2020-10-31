@@ -22,44 +22,45 @@
 import Foundation
 
 ///
-/// The supported API Versions in Kubernetes {{meta.modelVersion}}
+/// GroupVersionKind unambiguously identifies a kind.
 ///
-public enum APIVersion: String {
-{% for gvk in allGroupVersions %}
+public enum GroupVersionKind: String, CaseIterable {
+{% for gvk in allGVK %}
 	case {{ gvk|GVK.case }} = "{{ gvk|GVK.full }}"{% endfor %}
 
-	/// The URL path prefix for this APIVersion.
-	///
-	/// `/api` for the legacy `core` group and `/apis` for the named groups.
-	public var urlPathPrefix: String {
-		switch self {
-		case .coreV1:
-			return "/api"
-		default:
-			return "/apis"
-		}
-	}
-
-	/// The full URL path for this APIVersion in the form of `/api/version` or `/apis/group/version`.
-	public var urlPath: String {
-		return "\(urlPathPrefix)/\(rawValue)"
-	}
-
-	/// The group of this APIVersion
+	/// The group of this GroupVersionKind
 	public var group: String {
 		switch self {
-{% for gvk in allGroupVersions %}
+{% for gvk in allGVK %}
 		case .{{ gvk|GVK.case }}:
-			return "{{ gvk.group }}"{% endfor %}
+			return "{{ gvk|GVK.group }}"{% endfor %}
 		}
 	}
 
-	/// The version of this APIVersion
+	/// The version of this GroupVersionKind
 	public var version: String {
 		switch self {
-{% for gvk in allGroupVersions %}
+{% for gvk in allGVK %}
 		case .{{ gvk|GVK.case }}:
-			return "{{ gvk.version }}"{% endfor %}
+			return "{{ gvk|GVK.version }}"{% endfor %}
+		}
+	}
+
+	/// The kind of this GroupVersionKind
+	public var kind: String {
+		switch self {
+{% for gvk in allGVK %}
+		case .{{ gvk|GVK.case }}:
+			return "{{ gvk.kind }}"{% endfor %}
+		}
+	}
+
+	/// The API Version of this GroupVersionKind.
+	public var apiVersion: String {
+		if group == "core" {
+			return version
+		} else {
+			return "\(group)/\(version)"
 		}
 	}
 }

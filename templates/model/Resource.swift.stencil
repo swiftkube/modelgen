@@ -66,10 +66,7 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 
 	private enum CodingKeys: String, CodingKey {
 {% for property in resource.properties %}
-{% if not property.constValue %}
-		case {{ property.name|P.escapeKeywords }} = "{{ property.name }}"
-{% endif %}
-{% endfor %}
+		case {{ property.name|P.escapeKeywords }} = "{{ property.name }}"{% endfor %}
 	}
 {% if resource.requiresCodableExtension %}
 	public init(from decoder: Decoder) throws {

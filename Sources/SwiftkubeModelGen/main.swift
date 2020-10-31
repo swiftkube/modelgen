@@ -59,15 +59,13 @@ struct ModelGen: ParsableCommand {
 		}
 		try outputPath.mkpath()
 
-		let environment = makeStencilEnv(templatesPath: templatesPath)
 		let definitionsPath = try generateJSONSchema(outputPath: outputPath)
 		var schemas = try loadAndDecodeJson(url: definitionsPath.url, type: Definitions.self)
 
-		let allGroupVersions = Set(schemas.definitions.compactMap { $1.gvk?.makeGroupVersion() })
-		try renderAPIVersions(outputPath: outputPath, environment: environment, allGroupVersions: allGroupVersions)
-
-		let allAPITypes = schemas.definitions.filter { $0.value.isAPIResource }.map { TypeReference(ref: $0.key) }
-		try renderAPIVersionExtensions(outputPath: outputPath, environment: environment, allAPITypes: allAPITypes)
+		let environment = makeStencilEnv(templatesPath: templatesPath)
+		let allGVK = schemas.definitions.filter { $1.isAPIResource }.compactMap { $1.gvk }.sorted()
+		try renderGroupVersionKinds(outputPath: outputPath, environment: environment, allGVK: allGVK)
+		try rendeAnyKubernetesAPIResource(outputPath: outputPath, environment: environment, allGVK: allGVK)
 
 		schemas.definitions
 			.filter { $0.value.isListResource }
@@ -86,7 +84,7 @@ struct ModelGen: ParsableCommand {
 					"meta": ["modelVersion": apiVersion],
 				]
 
-				try makeDirectories(outputPath: outputPath, environment: environment, typeReference: typeReference)
+				try makeModelDirectories(outputPath: outputPath, environment: environment, typeReference: typeReference)
 				try renderResource(outputPath: outputPath, environment: environment, typeReference: typeReference, context: context)
 		}
 	}
@@ -119,7 +117,31 @@ struct ModelGen: ParsableCommand {
 		return Environment(loader: loader, extensions: [ext])
 	}
 
-	private func makeDirectories(outputPath: Path, environment: Environment, typeReference: TypeReference) throws {
+	private func renderGroupVersionKinds(outputPath: Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
+		let context: [String : Any] = [
+			"meta": ["modelVersion": apiVersion],
+			"allGVK": allGVK
+		]
+		let rendered = try environment.renderTemplate(name: "GroupVersionKind.swift.stencil", context: context)
+		let filePath = outputPath + Path("GroupVersionKind.swift")
+		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
+
+		let renderedExt = try environment.renderTemplate(name: "GroupVersionKind+KubernetesAPIResource.swift.stencil", context: context)
+		let extFilePath = outputPath + Path("GroupVersionKind+KubernetesAPIResource.swift")
+		try extFilePath.write(renderedExt.cleanupWhitespace(), encoding: .utf8)
+	}
+
+	private func rendeAnyKubernetesAPIResource(outputPath: Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
+		let context: [String : Any] = [
+			"meta": ["modelVersion": apiVersion],
+			"allGVK": allGVK
+		]
+		let rendered = try environment.renderTemplate(name: "AnyKubernetesAPIResource.swift.stencil", context: context)
+		let filePath = outputPath + Path("AnyKubernetesAPIResource.swift")
+		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
+	}
+
+	private func makeModelDirectories(outputPath: Path, environment: Environment, typeReference: TypeReference) throws {
 		let groupPath = outputPath + Path(typeReference.group)
 		try groupPath.mkpath()
 
@@ -138,26 +160,6 @@ struct ModelGen: ParsableCommand {
 		let versionSwift = try environment.renderTemplate(name: "Version.swift.stencil", context: context)
 		let versionFilePath = groupVersionPath + Path("\(typeReference.group)+\(typeReference.version).swift")
 		try versionFilePath.write(versionSwift, encoding: .utf8)
-	}
-
-	private func renderAPIVersions(outputPath: Path, environment: Environment, allGroupVersions: Set<GroupVersion>) throws {
-		let context: [String : Any] = [
-			"meta": ["modelVersion": apiVersion],
-			"allGroupVersions": allGroupVersions.sorted()
-		]
-		let rendered = try environment.renderTemplate(name: "APIVersion.swift.stencil", context: context)
-		let filePath = outputPath + Path("APIVersion.swift")
-		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
-	}
-
-	private func renderAPIVersionExtensions(outputPath: Path, environment: Environment, allAPITypes: [TypeReference]) throws {
-		let context: [String : Any] = [
-			"meta": ["modelVersion": apiVersion],
-			"allAPITypes": allAPITypes.sorted()
-		]
-		let rendered = try environment.renderTemplate(name: "APIVersion+KubernetesAPIResource.swift.stencil", context: context)
-		let filePath = outputPath + Path("APIVersion+KubernetesAPIResource.swift")
-		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
 	}
 
 	private func renderResource(outputPath: Path, environment: Environment, typeReference: TypeReference, context: [String: Any]) throws {
