@@ -68,7 +68,7 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 {% for property in resource.properties %}
 		case {{ property.name|P.escapeKeywords }} = "{{ property.name }}"{% endfor %}
 	}
-{% if resource.requiresCodableExtension %}
+
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 {% for property in resource.properties %}
@@ -81,12 +81,9 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 {% for property in resource.properties %}
-{% if not property.constValue %}
-		try container.encode(self.{{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }})
-{% endif %}
-{% endfor %}
+		try container.encode(self.{{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }}){% endfor %}
 	}
-{% endif %}
+
 }{% endif %}
 {% if resource.isListResource %}
 ///
