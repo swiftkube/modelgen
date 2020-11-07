@@ -107,12 +107,7 @@ struct Resource: Decodable, Comparable {
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
 		self.hasMetadata = properties.contains { $0.type.isMetadata }
 		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
-		self.isAPIResource =
-			!self.isListResource &&
-			!SpecialAPITypes.contains(resourceKey ?? "") &&
-			!NonAPITypes.contains(resourceKey ?? "") &&
-			properties.contains(where: { $0.name == "apiVersion" && $0.isContant }) &&
-			properties.contains(where: { $0.name == "kind" && $0.isContant })
+		self.isAPIResource = APITypes.contains(gvk?.kind ?? "")
 	}
 
 	static func < (lhs: Resource, rhs: Resource) -> Bool {
