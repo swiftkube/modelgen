@@ -187,5 +187,20 @@ extension Extension {
 			}
 			return "\(gvk.renderedTypeCase)"
 		}
+
+		registerFilter("GVK.plural") { input in
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+			}
+			return "\(gvk.renderedPluralName)"
+		}
+
+		registerFilter("GVK.short") { input in
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+			}
+			return (gvk.renderedShortName != nil) ? "\"\(gvk.renderedShortName!)\"" : "nil"
+		}
 	}
 }
+

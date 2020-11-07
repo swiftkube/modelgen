@@ -38,7 +38,7 @@ struct GroupVersionKind: Decodable, Hashable {
 	var renderedGroup: String {
 		return (group == "" || group == "core")
 			? "core"
-			: "\(String(group.prefix(while: { $0 != "." })))"
+			: "\(group)"
 	}
 
 	var renderedVersion: String {
@@ -61,6 +61,14 @@ struct GroupVersionKind: Decodable, Hashable {
 		return (group == "" || group == "core")
 			? "core.\(version).\(kind)"
 			: "\(String(group.prefix(while: { $0 != "." }))).\(version).\(kind)"
+	}
+
+	var renderedPluralName: String {
+		return PluralNames[kind]!
+	}
+
+	var renderedShortName: String? {
+		return ShortNames[kind]
 	}
 
 	func hash(into hasher: inout Hasher) {

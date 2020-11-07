@@ -63,4 +63,22 @@ public enum GroupVersionKind: String, CaseIterable {
 			return "\(group)/\(version)"
 		}
 	}
+
+	/// The kind of this GroupVersionKind
+	public var pluralName: String {
+		switch self {
+{% for gvk in allGVK %}
+		case .{{ gvk|GVK.case }}:
+			return "{{ gvk|GVK.plural }}"{% endfor %}
+		}
+	}
+
+	/// The kind of this GroupVersionKind
+	public var shortName: String? {
+		switch self {
+{% for gvk in allGVK %}
+		case .{{ gvk|GVK.case }}:
+			return {{ gvk|GVK.short }}{% endfor %}
+		}
+	}
 }
