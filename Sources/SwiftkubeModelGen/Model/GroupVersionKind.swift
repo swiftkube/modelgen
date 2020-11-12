@@ -47,8 +47,8 @@ struct GroupVersionKind: Decodable, Hashable {
 
 	var renderedCase: String {
 		return (group == "" || group == "core")
-			? "core\(version.capitalized)\(kind.capitalized)"
-			: "\(String(group.prefix(while: { $0 != "." })))\(version.capitalized)\(kind.capitalized)"
+			? "core\(version.capitalized)\(kind.capitalizingFirstLetter())"
+			: "\(String(group.prefix(while: { $0 != "." })))\(version.capitalized)\(kind.capitalizingFirstLetter())"
 	}
 
 	var renderedFull: String {
