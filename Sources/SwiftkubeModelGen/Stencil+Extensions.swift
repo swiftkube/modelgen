@@ -201,6 +201,13 @@ extension Extension {
 			}
 			return (gvk.renderedShortName != nil) ? "\"\(gvk.renderedShortName!)\"" : "nil"
 		}
+
+		registerFilter("GVK.nsScope") { input in
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+			}
+			return "\(gvk.renderedNamespaceScope)"
+		}
 	}
 }
 

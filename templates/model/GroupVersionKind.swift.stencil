@@ -81,4 +81,13 @@ public enum GroupVersionKind: String, CaseIterable {
 			return {{ gvk|GVK.short }}{% endfor %}
 		}
 	}
+
+	/// Whether the resource is namespaced or not
+	public var namespaced: Bool {
+		switch self {
+{% for gvk in allGVK %}
+		case .{{ gvk|GVK.case }}:
+			return {{ gvk|GVK.nsScope }}{% endfor %}
+		}
+	}
 }

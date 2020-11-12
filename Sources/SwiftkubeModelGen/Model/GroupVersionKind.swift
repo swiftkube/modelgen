@@ -71,6 +71,10 @@ struct GroupVersionKind: Decodable, Hashable {
 		return ShortNames[kind]
 	}
 
+	var renderedNamespaceScope: Bool {
+		return NamespaceScope[kind]!
+	}
+
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(group)
 		hasher.combine(version)
