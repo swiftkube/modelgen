@@ -48,6 +48,8 @@ struct Resource: Decodable, Comparable {
 	var isListResource: Bool = false
 	var isAPIResource: Bool = false
 	var isListableResource: Bool = false
+	var isNamespaced: Bool = false
+	var isClusterScoped: Bool = false
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -108,6 +110,12 @@ struct Resource: Decodable, Comparable {
 		self.hasMetadata = properties.contains { $0.type.isMetadata }
 		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 		self.isAPIResource = APITypes.contains(gvk?.kind ?? "")
+		self.isNamespaced = NamespaceScope.contains { (key: String, value: Bool) -> Bool in
+			key == gvk?.kind && value == true
+		}
+		self.isClusterScoped = NamespaceScope.contains { (key: String, value: Bool) -> Bool in
+			key == gvk?.kind && value == false
+		}
 	}
 
 	static func < (lhs: Resource, rhs: Resource) -> Bool {

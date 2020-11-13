@@ -46,6 +46,12 @@ extension Extension {
 			if schema.isListableResource {
 				protocols.append("ListableResource")
 			}
+			if schema.isNamespaced {
+				protocols.append("NamespacedResource")
+			}
+			if schema.isClusterScoped {
+				protocols.append("ClusterScopedResource")
+			}
 
 			return protocols.joined(separator: ", ")
 		}
