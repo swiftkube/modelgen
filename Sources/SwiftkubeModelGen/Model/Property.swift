@@ -24,6 +24,7 @@ indirect enum PropertyType {
 	case double
 	case number
 	case boolean
+	case date
 	case array(itemType: PropertyType)
 	case map(valueType: PropertyType)
 	case ref(typeRef: TypeReference)
@@ -115,6 +116,8 @@ indirect enum PropertyType {
 			return "Double"
 		case .boolean:
 			return "Bool"
+		case .date:
+			return "Date"
 		case let .array(itemType: subtype):
 			return "[\(subtype.renderedType)]"
 		case let .map(valueType: subtype):
@@ -125,8 +128,8 @@ indirect enum PropertyType {
 				return String(ref.split(separator: ".").last!)
 			case let ref where JSONTypes.keys.contains(ref):
 				return JSONTypes[ref]!.renderedType
-			case let ref where OtherTypes.keys.contains(ref):
-				return OtherTypes[ref]!.renderedType
+			case let ref where ConvertedTypes.keys.contains(ref):
+				return ConvertedTypes[ref]!.renderedType
 			default:
 				return "\(typeReference.group).\(typeReference.version).\(typeReference.kind)"
 			}

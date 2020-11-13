@@ -29,12 +29,12 @@ let JSONTypes = [
 	"io.k8s.apimachinery.pkg.runtime.RawExtension": PropertyType.map(valueType: .any),
 ]
 
-let OtherTypes = [
-	"io.k8s.apimachinery.pkg.apis.meta.v1.MicroTime": PropertyType.string,
-	"io.k8s.apimachinery.pkg.apis.meta.v1.Time": PropertyType.string,
+let ConvertedTypes = [
+	"io.k8s.apimachinery.pkg.apis.meta.v1.MicroTime": PropertyType.date,
+	"io.k8s.apimachinery.pkg.apis.meta.v1.Time": PropertyType.date,
 ]
 
-let IgnoredTypes = Set([
+let IgnoredSchemaTypes = Set([
 	"io.k8s.apiextensions-apiserver.pkg.apis.apiextensions.v1.JSON",
 	"io.k8s.apiextensions-apiserver.pkg.apis.apiextensions.v1beta1.JSON",
 	"io.k8s.apimachinery.pkg.api.resource.Quantity",

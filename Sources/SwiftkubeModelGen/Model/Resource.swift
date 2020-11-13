@@ -62,7 +62,7 @@ struct Resource: Decodable, Comparable {
 	init(from decoder: Decoder) throws {
 		let resourceKey = decoder.codingPath.last?.stringValue
 
-		if let _ = IgnoredTypes.first(where: { resourceKey?.hasPrefix($0) ?? false }) {
+		if let _ = IgnoredSchemaTypes.first(where: { resourceKey?.hasPrefix($0) ?? false }) {
 			self.gvk = nil
 			self.type = .null
 			self.description = ""
