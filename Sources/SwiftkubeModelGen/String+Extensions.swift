@@ -21,6 +21,13 @@ typealias NSRegularExpression = RegularExpression
 #endif
 
 extension String {
+
+	func sanitizedRef() -> String {
+		var sanitized = self.deletingPrefix("#/definitions/")
+		sanitized = TypePrefixes.reduce(sanitized) { result, prefix in result.deletingPrefix(prefix) }
+		return sanitized
+	}
+
 	func deletingPrefix(_ prefix: String) -> String {
 		guard hasPrefix(prefix) else {
 			return self

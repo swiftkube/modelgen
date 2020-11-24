@@ -72,7 +72,7 @@ struct GroupVersionKind: Decodable, Hashable {
 	}
 
 	var renderedNamespaceScope: Bool {
-		return NamespaceScope[kind]!
+		return ResourceScope[self] ?? false
 	}
 
 	func hash(into hasher: inout Hasher) {

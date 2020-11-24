@@ -59,22 +59,15 @@ struct ModelGen: ParsableCommand {
 		}
 		try outputPath.mkpath()
 
-		let definitionsPath = try generateJSONSchema(outputPath: outputPath)
-		var schemas = try loadAndDecodeJson(url: definitionsPath.url, type: Definitions.self)
+		var schema = try JSONSchemaProcessor(apiVersion: apiVersion).process(outputPath: outputPath)
+		try OpenAPIProcessor(apiVersion: apiVersion).process(schema: &schema)
 
 		let environment = makeStencilEnv(templatesPath: templatesPath)
-		let allGVK = schemas.definitions.filter { $1.isAPIResource }.compactMap { $1.gvk }.sorted()
+		let allGVK = schema.definitions.filter { $1.isAPIResource }.compactMap { $1.gvk }.sorted()
 		try renderGroupVersionKinds(outputPath: outputPath, environment: environment, allGVK: allGVK)
 		try rendeAnyKubernetesAPIResource(outputPath: outputPath, environment: environment, allGVK: allGVK)
 
-		schemas.definitions
-			.filter { $0.value.isListResource }
-			.forEach { key, resource in
-				let itemKind = key.deletingSuffix("List")
-				schemas.definitions[itemKind]?.isListableResource = true
-			}
-
-		try schemas.definitions
+		try schema.definitions
 			.filter { $0.value.type != .null }
 			.forEach { key, resource in
 				let typeReference = TypeReference(ref: key)
@@ -89,35 +82,14 @@ struct ModelGen: ParsableCommand {
 		}
 	}
 
-	private func generateJSONSchema(outputPath: Path) throws -> Path {
-		let jsonSchemaPath = outputPath + Path("schema-\(apiVersion)")
-		let openAPIURL = "https://raw.githubusercontent.com/kubernetes/kubernetes/\(apiVersion)/api/openapi-spec/swagger.json"
-
-		let _ = try shellOut(to: "/usr/local/bin/openapi2jsonschema", arguments: [
-			"--expanded", "--kubernetes",
-			"--prefix", "https://swiftkube.dev/schema/\(apiVersion)/_definitions.json",
-			"-o", jsonSchemaPath.absolute().string,
-			openAPIURL
-		])
-
-		return jsonSchemaPath + Path("_definitions.json")
-	}
-
-	private func loadAndDecodeJson<T: Decodable>(url: URL, type: T.Type) throws -> T {
-		guard let data = try String(contentsOf: url, encoding: .utf8).data(using: .utf8) else {
-			throw ModelGenError.RuntimeError(message: "Error decoding JSON")
-		}
-		return try JSONDecoder().decode(type, from: data)
-	}
-
-	private func makeStencilEnv(templatesPath: Path) -> Environment {
+	private func makeStencilEnv(templatesPath: PathKit.Path) -> Environment {
 		let loader = FileSystemLoader(paths: [templatesPath])
 		let ext = Extension()
 		ext.registerModelFilters()
 		return Environment(loader: loader, extensions: [ext])
 	}
 
-	private func renderGroupVersionKinds(outputPath: Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
+	private func renderGroupVersionKinds(outputPath: PathKit.Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
 		let context: [String : Any] = [
 			"meta": ["modelVersion": apiVersion],
 			"allGVK": allGVK
@@ -131,7 +103,7 @@ struct ModelGen: ParsableCommand {
 		try extFilePath.write(renderedExt.cleanupWhitespace(), encoding: .utf8)
 	}
 
-	private func rendeAnyKubernetesAPIResource(outputPath: Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
+	private func rendeAnyKubernetesAPIResource(outputPath: PathKit.Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
 		let context: [String : Any] = [
 			"meta": ["modelVersion": apiVersion],
 			"allGVK": allGVK
@@ -141,7 +113,7 @@ struct ModelGen: ParsableCommand {
 		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
 	}
 
-	private func makeModelDirectories(outputPath: Path, environment: Environment, typeReference: TypeReference) throws {
+	private func makeModelDirectories(outputPath: PathKit.Path, environment: Environment, typeReference: TypeReference) throws {
 		let groupPath = outputPath + Path(typeReference.group)
 		try groupPath.mkpath()
 
@@ -162,7 +134,7 @@ struct ModelGen: ParsableCommand {
 		try versionFilePath.write(versionSwift, encoding: .utf8)
 	}
 
-	private func renderResource(outputPath: Path, environment: Environment, typeReference: TypeReference, context: [String: Any]) throws {
+	private func renderResource(outputPath: PathKit.Path, environment: Environment, typeReference: TypeReference, context: [String: Any]) throws {
 		let rendered = try environment.renderTemplate(name: "Resource.swift.stencil", context: context)
 		let gvPath = outputPath + Path(typeReference.group) + Path(typeReference.version)
 		let filePath = gvPath + Path("\(typeReference.kind)+\(typeReference.group).\(typeReference.version).swift")

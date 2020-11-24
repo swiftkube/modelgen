@@ -35,21 +35,25 @@ struct Definitions: Decodable {
 	var definitions: [String: Resource]
 }
 
-struct Resource: Decodable, Comparable {
+class Resource: Decodable, Comparable {
 
-	let gvk: GroupVersionKind?
-	let type: Type
-	let description: String
-	let required: [String]
+	var gvk: GroupVersionKind?
+	var type: Type
+	var description: String
+	var required: [String]
 	var properties: [Property]
 	var deprecated: Bool = false
 	var requiresCodableExtension: Bool = false
 	var hasMetadata: Bool = false
 	var isListResource: Bool = false
 	var isAPIResource: Bool = false
-	var isListableResource: Bool = false
 	var isNamespaced: Bool = false
-	var isClusterScoped: Bool = false
+	var isReadableResource: Bool = false
+	var isListableResource: Bool = false
+	var isCreatableResource: Bool = false
+	var isReplaceableResource: Bool = false
+	var isDeletableResource: Bool = false
+	var isCollectionDeletableResource: Bool = false
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -59,7 +63,7 @@ struct Resource: Decodable, Comparable {
 		case gvk = "x-kubernetes-group-version-kind"
 	}
 
-	init(from decoder: Decoder) throws {
+	required init(from decoder: Decoder) throws {
 		let resourceKey = decoder.codingPath.last?.stringValue
 
 		if let _ = IgnoredSchemaTypes.first(where: { resourceKey?.hasPrefix($0) ?? false }) {
@@ -109,13 +113,6 @@ struct Resource: Decodable, Comparable {
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
 		self.hasMetadata = properties.contains { $0.type.isMetadata }
 		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
-		self.isAPIResource = APITypes.contains(gvk?.kind ?? "")
-		self.isNamespaced = NamespaceScope.contains { (key: String, value: Bool) -> Bool in
-			key == gvk?.kind && value == true
-		}
-		self.isClusterScoped = NamespaceScope.contains { (key: String, value: Bool) -> Bool in
-			key == gvk?.kind && value == false
-		}
 	}
 
 	static func < (lhs: Resource, rhs: Resource) -> Bool {

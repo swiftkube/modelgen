@@ -33,27 +33,51 @@ extension Extension {
 			guard let schema = input as? Resource else {
 				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
 			}
-			var protocols = ["KubernetesResource"]
+			var mainProtocols: [String] = []
 			if schema.isListResource {
-				protocols.append("KubernetesResourceList")
+				mainProtocols.append("KubernetesResource")
+				mainProtocols.append("KubernetesResourceList")
 			}
 			if schema.isAPIResource {
-				protocols.append("KubernetesAPIResource")
+				mainProtocols.append("KubernetesAPIResource")
 			}
 			if schema.hasMetadata {
-				protocols.append("MetadataHavingResource")
+				mainProtocols.append("MetadataHavingResource")
+			}
+			if schema.isAPIResource && schema.isNamespaced {
+				mainProtocols.append("NamespacedResource")
+			}
+			if schema.isAPIResource && !schema.isNamespaced {
+				mainProtocols.append("ClusterScopedResource")
+			}
+			if mainProtocols.isEmpty {
+				mainProtocols.append("KubernetesResource")
+			}
+			var verbsProtocols: [String] = []
+			if schema.isReadableResource {
+				verbsProtocols.append("ReadableResource")
 			}
 			if schema.isListableResource {
-				protocols.append("ListableResource")
+				verbsProtocols.append("ListableResource")
 			}
-			if schema.isNamespaced {
-				protocols.append("NamespacedResource")
+			if schema.isCreatableResource {
+				verbsProtocols.append("CreatableResource")
 			}
-			if schema.isClusterScoped {
-				protocols.append("ClusterScopedResource")
+			if schema.isReplaceableResource {
+				verbsProtocols.append("ReplaceableResource")
+			}
+			if schema.isDeletableResource {
+				verbsProtocols.append("DeletableResource")
+			}
+			if schema.isCollectionDeletableResource {
+				verbsProtocols.append("CollectionDeletableResource")
 			}
 
-			return protocols.joined(separator: ", ")
+			if verbsProtocols.isEmpty {
+				return mainProtocols.joined(separator: ", ")
+			}
+
+			return mainProtocols.joined(separator: ", ") + ",\n\t\t\t\t" + verbsProtocols.joined(separator: ", ")
 		}
 
 		registerFilter("P.renderDescription") { input in
