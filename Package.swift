@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-	name: "swiftkube-modelgen",
+	name: "SwiftkubeModelGen",
 	dependencies: [
 		.package(url: "https://github.com/apple/swift-argument-parser", from: "0.3.0"),
 		.package(url: "https://github.com/stencilproject/Stencil", from: "0.13.1"),

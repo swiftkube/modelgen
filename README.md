@@ -25,5 +25,5 @@ swift build
 Run the script:
 
 ```shell
-swiftkube-modelgen --api-version v1.18.9 --templates templates/model --output <path for generated model>
+SwiftkubeModelGen --api-version v1.18.9 --templates templates/model --output <path for generated model>
 ```
