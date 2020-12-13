@@ -55,7 +55,7 @@ struct ModelGen: ParsableCommand {
 		}
 
 		if clear {
-			try outputPath.delete()
+			try? outputPath.delete()
 		}
 		try outputPath.mkpath()
 
