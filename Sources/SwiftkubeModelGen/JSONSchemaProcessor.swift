@@ -30,7 +30,7 @@ class JSONSchemaProcessor {
 		let definitionsPath = try generateJSONSchema(outputPath: outputPath)
 		var schema = try loadAndDecodeJson(url: definitionsPath.url, type: Definitions.self)
 		schema.definitions = Dictionary(uniqueKeysWithValues: schema.definitions.map { key, value in
-			return (key.sanitizedRef() , value)
+			(key.sanitizedRef(), value)
 		})
 
 		return schema
@@ -40,11 +40,11 @@ class JSONSchemaProcessor {
 		let jsonSchemaPath = outputPath + Path("schema-\(apiVersion)")
 		let openAPIURL = "https://raw.githubusercontent.com/kubernetes/kubernetes/\(apiVersion)/api/openapi-spec/swagger.json"
 
-		let _ = try shellOut(to: "/usr/local/bin/openapi2jsonschema", arguments: [
+		_ = try shellOut(to: "/usr/local/bin/openapi2jsonschema", arguments: [
 			"--expanded", "--kubernetes",
 			"--prefix", "https://swiftkube.dev/schema/\(apiVersion)/_definitions.json",
 			"-o", jsonSchemaPath.absolute().string,
-			openAPIURL
+			openAPIURL,
 		])
 
 		return jsonSchemaPath + Path("_definitions.json")

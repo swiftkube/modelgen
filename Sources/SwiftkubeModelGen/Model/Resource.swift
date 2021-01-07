@@ -16,24 +16,33 @@
 
 import Foundation
 
+// MARK: - Type
+
 enum Type: String, Decodable {
 	case string, integer, number, boolean, null, array, object
 }
+
+// MARK: - DynamicCodingKeys
 
 struct DynamicCodingKeys: CodingKey {
 	let stringValue: String
 	init?(stringValue: String) {
 		self.stringValue = stringValue
 	}
+
 	var intValue: Int?
 	init?(intValue: Int) {
-		return nil
+		nil
 	}
 }
+
+// MARK: - Definitions
 
 struct Definitions: Decodable {
 	var definitions: [String: Resource]
 }
+
+// MARK: - Resource
 
 class Resource: Decodable, Comparable {
 
@@ -81,7 +90,7 @@ class Resource: Decodable, Comparable {
 		self.type = try container.decode(Type.self, forKey: .type)
 		self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
 		self.required = try container.decodeIfPresent([String].self, forKey: .required) ?? []
-		self.deprecated = (self.description.range(of: "deprecated", options: .caseInsensitive) != nil)
+		self.deprecated = (description.range(of: "deprecated", options: .caseInsensitive) != nil)
 		self.properties = []
 
 		guard container.allKeys.contains(.properties) else {
@@ -109,7 +118,7 @@ class Resource: Decodable, Comparable {
 			return property
 		}
 
-		self.properties.append(contentsOf: props.sorted())
+		properties.append(contentsOf: props.sorted())
 		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
 		self.hasMetadata = properties.contains { $0.type.isMetadata }
 		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false

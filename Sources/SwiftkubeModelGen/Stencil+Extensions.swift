@@ -44,10 +44,10 @@ extension Extension {
 			if schema.hasMetadata {
 				mainProtocols.append("MetadataHavingResource")
 			}
-			if schema.isAPIResource && schema.isNamespaced {
+			if schema.isAPIResource, schema.isNamespaced {
 				mainProtocols.append("NamespacedResource")
 			}
-			if schema.isAPIResource && !schema.isNamespaced {
+			if schema.isAPIResource, !schema.isNamespaced {
 				mainProtocols.append("ClusterScopedResource")
 			}
 			if mainProtocols.isEmpty {
@@ -77,7 +77,7 @@ extension Extension {
 				return mainProtocols.joined(separator: ", ")
 			}
 
-			return mainProtocols.joined(separator: ", ") + ",\n\t\t\t\t" + verbsProtocols.joined(separator: ", ")
+			return mainProtocols.joined(separator: ", ") + ",\n\t\t" + verbsProtocols.joined(separator: ", ")
 		}
 
 		registerFilter("P.renderDescription") { input in
@@ -122,8 +122,9 @@ extension Extension {
 
 			let value = { () -> String in
 				guard let constValue = property.constValue,
-					let rendered = property.type.renderedValue(from: constValue) else {
-						return ""
+				      let rendered = property.type.renderedValue(from: constValue)
+				else {
+					return ""
 				}
 				return " = \(rendered)"
 			}()
@@ -240,4 +241,3 @@ extension Extension {
 		}
 	}
 }
-

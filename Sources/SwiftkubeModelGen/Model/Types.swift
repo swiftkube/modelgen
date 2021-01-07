@@ -121,7 +121,7 @@ let ShortNames = [
 	"ComponentStatus":                "cs",
 	"ConfigMap":                      "cm",
 	"CronJob":                        "cj",
-	"CustomResourceDefinition":       "crd" ,
+	"CustomResourceDefinition":       "crd",
 	"DaemonSet":                      "ds",
 	"Deployment":                     "deploy",
 	"Endpoints":                      "ep",
@@ -144,5 +144,5 @@ let ShortNames = [
 	"Service":                        "svc",
 	"ServiceAccount":                 "sa",
 	"StatefulSet":                    "sts",
-	"StorageClass":                   "sc"
+	"StorageClass":                   "sc",
 ]

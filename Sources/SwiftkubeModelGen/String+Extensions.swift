@@ -17,13 +17,13 @@
 import Foundation
 
 #if os(Linux)
-typealias NSRegularExpression = RegularExpression
+	typealias NSRegularExpression = RegularExpression
 #endif
 
 extension String {
 
 	func sanitizedRef() -> String {
-		var sanitized = self.deletingPrefix("#/definitions/")
+		var sanitized = deletingPrefix("#/definitions/")
 		sanitized = TypePrefixes.reduce(sanitized) { result, prefix in result.deletingPrefix(prefix) }
 		return sanitized
 	}
@@ -46,16 +46,16 @@ extension String {
 		let regex = try! NSRegularExpression(pattern: #"^\n\s*\n"#, options: .anchorsMatchLines)
 		return regex.stringByReplacingMatches(
 			in: self,
-			range: NSRange(self.startIndex..., in: self),
+			range: NSRange(startIndex..., in: self),
 			withTemplate: ""
 		)
 	}
 
 	func capitalizingFirstLetter() -> String {
-		return prefix(1).capitalized + dropFirst()
+		prefix(1).capitalized + dropFirst()
 	}
 
 	mutating func capitalizeFirstLetter() {
-		self = self.capitalizingFirstLetter()
+		self = capitalizingFirstLetter()
 	}
 }

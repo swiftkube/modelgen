@@ -12,12 +12,13 @@ let package = Package(
 	],
 	targets: [
 		.target(
-			name: "SwiftkubeModelGen",
+			name: "swiftkube-modelgen",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 				.product(name: "Stencil", package: "Stencil"),
 				.product(name: "ShellOut", package: "ShellOut"),
-			]
+			],
+			path: "Sources/SwiftkubeModelGen"
 		),
 	]
 )

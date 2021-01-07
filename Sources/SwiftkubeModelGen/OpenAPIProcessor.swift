@@ -24,6 +24,8 @@ let SubResources = [
 	"/status",
 ]
 
+// MARK: - OpenAPIProcessor
+
 class OpenAPIProcessor {
 
 	let apiVersion: String
@@ -43,7 +45,7 @@ class OpenAPIProcessor {
 				continue
 			}
 
-			var resource: Resource? = nil
+			var resource: Resource?
 			if let def = definition["get"] as? [String: Any] {
 				resource = processGET(path, def, &schema)
 			}
@@ -139,7 +141,7 @@ class OpenAPIProcessor {
 	}
 
 	private func processPATCH(_ path: String, _ def: [String: Any], _ schema: inout Definitions) -> Resource? {
-		// TODO
-		return nil
+		// TODO:
+		nil
 	}
 }

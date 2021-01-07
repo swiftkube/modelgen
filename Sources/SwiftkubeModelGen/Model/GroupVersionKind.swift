@@ -16,6 +16,8 @@
 
 import Foundation
 
+// MARK: - GroupVersionKind
+
 struct GroupVersionKind: Decodable, Hashable {
 	let group: String
 	let version: String
@@ -36,43 +38,43 @@ struct GroupVersionKind: Decodable, Hashable {
 	}
 
 	var renderedGroup: String {
-		return (group == "" || group == "core")
+		(group == "" || group == "core")
 			? "core"
 			: "\(group)"
 	}
 
 	var renderedVersion: String {
-		return version
+		version
 	}
 
 	var renderedCase: String {
-		return (group == "" || group == "core")
+		(group == "" || group == "core")
 			? "core\(version.capitalized)\(kind.capitalizingFirstLetter())"
 			: "\(String(group.prefix(while: { $0 != "." })))\(version.capitalized)\(kind.capitalizingFirstLetter())"
 	}
 
 	var renderedFull: String {
-		return (group == "" || group == "core")
+		(group == "" || group == "core")
 			? "\(version)/\(kind)"
 			: "\(group)/\(version)/\(kind)"
 	}
 
 	var renderedTypeCase: String {
-		return (group == "" || group == "core")
+		(group == "" || group == "core")
 			? "core.\(version).\(kind)"
 			: "\(String(group.prefix(while: { $0 != "." }))).\(version).\(kind)"
 	}
 
 	var renderedPluralName: String {
-		return PluralNames[kind]!
+		PluralNames[kind]!
 	}
 
 	var renderedShortName: String? {
-		return ShortNames[kind]
+		ShortNames[kind]
 	}
 
 	var renderedNamespaceScope: Bool {
-		return ResourceScope[self] ?? false
+		ResourceScope[self] ?? false
 	}
 
 	func hash(into hasher: inout Hasher) {
@@ -80,6 +82,8 @@ struct GroupVersionKind: Decodable, Hashable {
 		hasher.combine(version)
 	}
 }
+
+// MARK: Comparable
 
 extension GroupVersionKind: Comparable {
 
@@ -97,23 +101,23 @@ extension GroupVersionKind: Comparable {
 			let lv = lhs.version.parseVersion()
 			let rv = rhs.version.parseVersion()
 
-			if lv.level.isEmpty && rv.level.contains("beta") {
+			if lv.level.isEmpty, rv.level.contains("beta") {
 				return true
-			} else if lv.level.isEmpty && rv.level.contains("alpha") {
+			} else if lv.level.isEmpty, rv.level.contains("alpha") {
 				return true
-			} else if lv.level.contains("beta") && rv.level.contains("alpha") {
+			} else if lv.level.contains("beta"), rv.level.contains("alpha") {
 				return true
-			} else if lv.level.contains("alpha") && rv.level.contains("beta") {
+			} else if lv.level.contains("alpha"), rv.level.contains("beta") {
 				return false
-			} else if lv.level.contains("beta") && rv.level.isEmpty {
+			} else if lv.level.contains("beta"), rv.level.isEmpty {
 				return false
-			}  else if lv.level.contains("alpha") && rv.level.isEmpty {
+			} else if lv.level.contains("alpha"), rv.level.isEmpty {
 				return false
 			} else if lv.level == rv.level {
 				return lv.version < rv.version
-			} else if lv.level.contains("alpha") && rv.level.contains("alpha")  {
+			} else if lv.level.contains("alpha"), rv.level.contains("alpha") {
 				return lv.level > rv.level
-			} else if lv.level.contains("beta") && rv.level.contains("beta")  {
+			} else if lv.level.contains("beta"), rv.level.contains("beta") {
 				return lv.level > rv.level
 			} else {
 				return false

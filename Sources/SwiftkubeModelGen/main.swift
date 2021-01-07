@@ -16,16 +16,20 @@
 
 import Foundation
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 import ArgumentParser
-import Stencil
 import PathKit
 import ShellOut
+import Stencil
+
+// MARK: - ModelGenError
 
 enum ModelGenError: Error {
 	case RuntimeError(message: String)
 }
+
+// MARK: - ModelGen
 
 struct ModelGen: ParsableCommand {
 	static let configuration = CommandConfiguration(
@@ -79,7 +83,7 @@ struct ModelGen: ParsableCommand {
 
 				try makeModelDirectories(outputPath: outputPath, environment: environment, typeReference: typeReference)
 				try renderResource(outputPath: outputPath, environment: environment, typeReference: typeReference, context: context)
-		}
+			}
 	}
 
 	private func makeStencilEnv(templatesPath: PathKit.Path) -> Environment {
@@ -90,9 +94,9 @@ struct ModelGen: ParsableCommand {
 	}
 
 	private func renderGroupVersionKinds(outputPath: PathKit.Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
-		let context: [String : Any] = [
+		let context: [String: Any] = [
 			"meta": ["modelVersion": apiVersion],
-			"allGVK": allGVK
+			"allGVK": allGVK,
 		]
 		let rendered = try environment.renderTemplate(name: "GroupVersionKind.swift.stencil", context: context)
 		let filePath = outputPath + Path("GroupVersionKind.swift")
@@ -104,9 +108,9 @@ struct ModelGen: ParsableCommand {
 	}
 
 	private func rendeAnyKubernetesAPIResource(outputPath: PathKit.Path, environment: Environment, allGVK: [GroupVersionKind]) throws {
-		let context: [String : Any] = [
+		let context: [String: Any] = [
 			"meta": ["modelVersion": apiVersion],
-			"allGVK": allGVK
+			"allGVK": allGVK,
 		]
 		let rendered = try environment.renderTemplate(name: "AnyKubernetesAPIResource.swift.stencil", context: context)
 		let filePath = outputPath + Path("AnyKubernetesAPIResource.swift")
@@ -119,7 +123,7 @@ struct ModelGen: ParsableCommand {
 
 		let context: [String: Any] = [
 			"type": typeReference,
-			"meta": ["modelVersion": apiVersion]
+			"meta": ["modelVersion": apiVersion],
 		]
 
 		let groupSwift = try environment.renderTemplate(name: "Group.swift.stencil", context: context)

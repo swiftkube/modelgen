@@ -32,7 +32,7 @@ struct TypeReference: Hashable, Comparable {
 		self.version = String(gvk[1])
 		self.kind = String(gvk[2])
 		self.gvk = GroupVersionKind(group: group, version: version, kind: kind)
-		self.listItemKind = self.kind.deletingSuffix("List")
+		self.listItemKind = kind.deletingSuffix("List")
 
 		if group == "core" {
 			self.apiVersion = version

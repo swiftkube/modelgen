@@ -16,6 +16,8 @@
 
 import Foundation
 
+// MARK: - PropertyType
+
 indirect enum PropertyType {
 	case string
 	case integer
@@ -150,6 +152,8 @@ indirect enum PropertyType {
 	}
 }
 
+// MARK: - Property
+
 struct Property: Decodable, Comparable {
 
 	let type: PropertyType
@@ -159,11 +163,11 @@ struct Property: Decodable, Comparable {
 	var required: Bool = false
 
 	var isContant: Bool {
-		return constValue != nil
+		constValue != nil
 	}
 
 	var isOptional: Bool {
-		return !isContant && !required
+		!isContant && !required
 	}
 
 	static func < (lhs: Property, rhs: Property) -> Bool {
@@ -172,13 +176,13 @@ struct Property: Decodable, Comparable {
 			return true
 		case (_, "apiVersion"):
 			return false
-		case ("kind", let val) where val != "apiVersion":
+		case let ("kind", val) where val != "apiVersion":
 			return true
-		case (let val, "kind") where val != "apiVersion":
+		case let (val, "kind") where val != "apiVersion":
 			return false
-		case ("metadata", let val) where val != "apiVersion" && val != "kind":
+		case let ("metadata", val) where val != "apiVersion" && val != "kind":
 			return true
-		case (let val, "metadata") where val != "apiVersion" && val != "kind":
+		case let (val, "metadata") where val != "apiVersion" && val != "kind":
 			return false
 		case let (l, r):
 			return l! < r!
@@ -186,7 +190,7 @@ struct Property: Decodable, Comparable {
 	}
 
 	static func == (lhs: Property, rhs: Property) -> Bool {
-		return lhs.name == rhs.name
+		lhs.name == rhs.name
 	}
 
 	enum CodingKeys: String, CodingKey {
