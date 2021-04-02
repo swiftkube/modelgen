@@ -96,7 +96,7 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }}: Sequence {
 	public typealias Element = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
 
 	public func makeIterator() -> AnyIterator<{{ type.group }}.{{ type.version }}.{{ type.listItemKind }}> {
-		AnyIterator(self.items.makeIterator())
+		AnyIterator(items.makeIterator())
 	}
 }
 {% endif %}

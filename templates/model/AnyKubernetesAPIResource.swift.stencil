@@ -80,7 +80,7 @@ public struct AnyKubernetesAPIResource: KubernetesAPIResource {
 		switch gvk {
 {% for gvk in allGVK %}
 		case .{{ gvk|GVK.case }}:
-			decoded = try {{ gvk|GVK.type }}.init(from: decoder){% endfor %}
+			decoded = try {{ gvk|GVK.type }}(from: decoder){% endfor %}
 		default:
 			let context = DecodingError.Context(
 				codingPath: [CodingKeys.apiVersion, CodingKeys.kind],
