@@ -78,7 +78,7 @@ public struct AnyKubernetesAPIResource: KubernetesAPIResource {
 
 		let decoded: KubernetesAPIResource
 		switch gvk {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			decoded = try {{ gvk|GVK.type }}(from: decoder){% endfor %}
 		default:

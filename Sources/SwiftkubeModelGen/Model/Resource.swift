@@ -106,15 +106,15 @@ class Resource: Decodable, Comparable {
 			if required.contains(key.stringValue) {
 				property.required = true
 			}
-			if key.stringValue == "apiVersion" {
-				if let gvk = self.gvk {
-					if gvk.group.isEmpty {
-						property.constValue = gvk.version
-					} else {
-						property.constValue = "\(gvk.group)/\(gvk.version)"
-					}
+
+			if key.stringValue == "apiVersion", let gvk = self.gvk {
+				if gvk.group.isEmpty {
+					property.constValue = gvk.version
+				} else {
+					property.constValue = "\(gvk.group)/\(gvk.version)"
 				}
 			}
+
 			return property
 		}
 

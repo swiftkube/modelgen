@@ -39,7 +39,7 @@ public extension GroupVersionKind {
 	/// - Parameter type: A type of a `KubernetesAPIResource`, e.g. `core.v1.Pod.self`.
 	init?<R: KubernetesAPIResource>(of type: R.Type) {
 		switch type {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case is {{ gvk|GVK.type }}.Type:
 			self = .{{ gvk|GVK.case }}{% endfor %}
 		default:

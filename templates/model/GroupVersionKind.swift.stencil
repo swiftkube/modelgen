@@ -25,13 +25,13 @@ import Foundation
 /// GroupVersionKind unambiguously identifies a kind.
 ///
 public enum GroupVersionKind: String, CaseIterable {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 	case {{ gvk|GVK.case }} = "{{ gvk|GVK.full }}"{% endfor %}
 
 	/// The group of this GroupVersionKind
 	public var group: String {
 		switch self {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			return "{{ gvk|GVK.group }}"{% endfor %}
 		}
@@ -40,7 +40,7 @@ public enum GroupVersionKind: String, CaseIterable {
 	/// The version of this GroupVersionKind
 	public var version: String {
 		switch self {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			return "{{ gvk|GVK.version }}"{% endfor %}
 		}
@@ -49,7 +49,7 @@ public enum GroupVersionKind: String, CaseIterable {
 	/// The kind of this GroupVersionKind
 	public var kind: String {
 		switch self {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			return "{{ gvk.kind }}"{% endfor %}
 		}
@@ -67,7 +67,7 @@ public enum GroupVersionKind: String, CaseIterable {
 	/// The kind of this GroupVersionKind
 	public var pluralName: String {
 		switch self {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			return "{{ gvk|GVK.plural }}"{% endfor %}
 		}
@@ -76,7 +76,7 @@ public enum GroupVersionKind: String, CaseIterable {
 	/// The kind of this GroupVersionKind
 	public var shortName: String? {
 		switch self {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			return {{ gvk|GVK.short }}{% endfor %}
 		}
@@ -85,7 +85,7 @@ public enum GroupVersionKind: String, CaseIterable {
 	/// Whether the resource is namespaced or not
 	public var namespaced: Bool {
 		switch self {
-{% for gvk in allGVK %}
+{% for gvk in groupVersionKinds %}
 		case .{{ gvk|GVK.case }}:
 			return {{ gvk|GVK.nsScope }}{% endfor %}
 		}
