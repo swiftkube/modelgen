@@ -63,6 +63,9 @@ class Resource: Decodable, Comparable {
 	var isReplaceableResource: Bool = false
 	var isDeletableResource: Bool = false
 	var isCollectionDeletableResource: Bool = false
+	var isScalableResource: Bool = false
+	var isEvictableResource: Bool = false
+	var hasStatus: Bool = false
 
 	enum CodingKeys: String, CodingKey {
 		case type

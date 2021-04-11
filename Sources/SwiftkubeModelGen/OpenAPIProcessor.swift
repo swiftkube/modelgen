@@ -40,8 +40,12 @@ class OpenAPIProcessor {
 		let spec = try JSONSerialization.jsonObject(with: data) as! [String: Any]
 		let paths = spec["paths"] as! [String: [String: Any]]
 
+		var subResourcePaths = [String]()
+		var resourceMap = [String: Resource]()
+
 		for (path, definition) in paths {
 			if let _ = SubResources.first(where: { path.hasSuffix($0) }) {
+				subResourcePaths.append(path)
 				continue
 			}
 
@@ -69,6 +73,26 @@ class OpenAPIProcessor {
 			if path.contains("{namespace}") {
 				apiResource.isNamespaced = true
 				ResourceScope[apiResource.gvk!] = true
+			}
+
+			resourceMap[path] = apiResource
+		}
+
+		for path in subResourcePaths {
+			let lastSlash = path.lastIndex(of: "/")!
+			let subResource = path.suffix(from: lastSlash)
+			let parentResourcePath = path.dropLast("/{name}".count + subResource.count)
+			let parentResource = resourceMap[String(parentResourcePath)]!
+
+			switch subResource {
+			case "/eviction":
+				parentResource.isEvictableResource = true
+			case "/scale":
+				parentResource.isScalableResource = true
+			case "/status":
+				parentResource.hasStatus = true
+			default:
+				continue
 			}
 		}
 	}

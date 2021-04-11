@@ -43,11 +43,18 @@ extension String {
 	}
 
 	func cleanupWhitespace() -> String {
-		let regex = try! NSRegularExpression(pattern: #"^\n\s*\n"#, options: .anchorsMatchLines)
-		return regex.stringByReplacingMatches(
+		let doubleLines = try! NSRegularExpression(pattern: #"^\n\s*\n"#, options: .anchorsMatchLines)
+		let cleanedDoubleLines = doubleLines.stringByReplacingMatches(
 			in: self,
 			range: NSRange(startIndex..., in: self),
 			withTemplate: ""
+		)
+
+		let docWhitespace = try! NSRegularExpression(pattern: #"(^\s*///) $"#, options: .anchorsMatchLines)
+		return docWhitespace.stringByReplacingMatches(
+			in: cleanedDoubleLines,
+			range: NSRange(cleanedDoubleLines.startIndex..., in: cleanedDoubleLines),
+			withTemplate: "$1"
 		)
 	}
 

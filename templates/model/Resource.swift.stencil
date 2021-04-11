@@ -25,7 +25,7 @@ import Foundation
 public extension {{ type.group }}.{{ type.version }} {
 
 	{{ resource|R.renderDescription }}
-	struct {{ type.kind }}: {{ resource|R.protocols }} {
+	struct {{ type.kind }}: {{ resource|R.protocols }}
 {% if resource.isListResource %}
 
 		///
@@ -57,8 +57,8 @@ public extension {{ type.group }}.{{ type.version }} {
 			self.{{ property.name|P.escapeKeywords }} = {{ property.name|P.escapeKeywords }}{% endfor %}
 		}
 	}
-}
-{% if resource.properties.count > 0 %}
+}{% if resource.properties.count > 0 %}
+
 ///
 /// Codable conformance
 ///
@@ -83,9 +83,8 @@ public extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 {% for property in resource.properties %}
 		try container.encode({{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }}){% endfor %}
 	}
+}{% endif %}{% if resource.isListResource %}
 
-}{% endif %}
-{% if resource.isListResource %}
 // MARK: - {{ type.group }}.{{ type.version }}.{{ type.kind }} + Sequence
 
 ///
@@ -98,5 +97,4 @@ extension {{ type.group }}.{{ type.version }}.{{ type.kind }}: Sequence {
 	public func makeIterator() -> AnyIterator<{{ type.group }}.{{ type.version }}.{{ type.listItemKind }}> {
 		AnyIterator(items.makeIterator())
 	}
-}
-{% endif %}
+}{% endif %}

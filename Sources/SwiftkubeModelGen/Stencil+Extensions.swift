@@ -72,12 +72,28 @@ extension Extension {
 			if schema.isCollectionDeletableResource {
 				verbsProtocols.append("CollectionDeletableResource")
 			}
-
-			if verbsProtocols.isEmpty {
-				return mainProtocols.joined(separator: ", ")
+			var additionalProtocols: [String] = []
+			if schema.isEvictableResource {
+				additionalProtocols.append("EvictableResource")
+			}
+			if schema.isScalableResource {
+				additionalProtocols.append("ScalableResource")
+			}
+			if schema.hasStatus {
+				additionalProtocols.append("StatusHavingResource")
 			}
 
-			return mainProtocols.joined(separator: ", ") + ",\n\t\t" + verbsProtocols.joined(separator: ", ")
+			let renderedMain = mainProtocols.joined(separator: ", ")
+			let renderedVerbs = verbsProtocols.joined(separator: ", ")
+			let renderedAdditional = additionalProtocols.joined(separator: ", ")
+
+			if verbsProtocols.isEmpty && additionalProtocols.isEmpty {
+				return  renderedMain + " {"
+			} else if additionalProtocols.isEmpty {
+				return renderedMain + ",\n\t\t" + renderedVerbs + "\n\t{"
+			}
+
+			return renderedMain + ",\n\t\t" + renderedVerbs + ",\n\t\t" + renderedAdditional + "\n\t{"
 		}
 
 		registerFilter("P.renderDescription") { input in
