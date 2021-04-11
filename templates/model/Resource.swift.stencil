@@ -50,7 +50,7 @@ public extension {{ type.group }}.{{ type.version }} {
 		public init(
 
 {% for property in resource.properties where property.constValue == nil %}
-			{{ property|P.renderArg}}{{ property|P.renderArgDefaultNil}}{% if not forloop.last %},{% endif %}{% endfor %}
+			{{ property|P.renderArg}}{{ property|P.renderArgDefaultNil }}{% if not forloop.last %},{% endif %}{% endfor %}
 		) {
 
 {% for property in resource.properties where property.constValue == nil %}

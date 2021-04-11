@@ -95,3 +95,26 @@ struct ResourceTemplate: TemplateType {
 		]
 	}
 }
+
+struct ClientAPIDSLTemplate: TemplateType {
+
+	let stencilTemplate = "ClientAPIResourceDSL.swift.stencil"
+	let groupVersion: GroupVersion
+	let resources: [Resource]
+
+	func destination(basePath: Path) -> Path {
+		let shortGroupName = String(groupVersion.group.prefix(while: { $0 != "." }))
+
+		return basePath
+			+ Path("client")
+			+ Path("DSL")
+			+ Path("KubernetesClient+\(shortGroupName).\(groupVersion.version).swift")
+	}
+
+	func stencilContext() -> [String : Any] {
+		return [
+			"groupVersion": groupVersion,
+			"resources": resources
+		]
+	}
+}

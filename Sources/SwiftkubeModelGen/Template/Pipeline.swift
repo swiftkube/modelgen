@@ -81,3 +81,31 @@ struct RenderResources: PipelineStep {
 		]
 	}
 }
+
+
+struct RenderClientDSL: PipelineStep {
+
+	let environment: Environment
+
+	func process(basePath: Path, cotext: TemplateContex) throws {
+		let apiResources = cotext.resources.filter { $0.resource.isAPIResource }
+		let groupVersions = Dictionary(grouping: apiResources) {
+			GroupVersion(group: $0.resource.gvk!.group, version: $0.resource.gvk!.version)
+		}
+
+		try groupVersions
+			.flatMap { (key: GroupVersion, value: [ResourceContext]) in
+				makeSteps(gv: key, resources: value.map(\.resource))
+			}
+			.forEach { (step: PipelineStep) in
+				try step.process(basePath: basePath, cotext: cotext)
+			}
+	}
+
+	private func makeSteps(gv: GroupVersion, resources: [Resource]) -> [PipelineStep] {
+		return [
+			MakeDirectories(dirs: ["client", "DSL"]),
+			RenderTemplate(environment: environment, template: ClientAPIDSLTemplate(groupVersion: gv, resources: resources))
+		]
+	}
+}

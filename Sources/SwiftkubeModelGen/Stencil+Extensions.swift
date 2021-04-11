@@ -22,7 +22,7 @@ extension Extension {
 	func registerModelFilters() {
 		registerFilter("R.renderDescription") { input in
 			guard let schema = input as? Resource else {
-				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
+				throw ModelGenError.RuntimeError(message: "[R.renderDescription]: Input must be a definition Schema")
 			}
 			let description = schema.description
 			let indented = description.replacingOccurrences(of: "\n", with: "\n\t/// ")
@@ -31,7 +31,7 @@ extension Extension {
 
 		registerFilter("R.protocols") { input in
 			guard let schema = input as? Resource else {
-				throw ModelGenError.RuntimeError(message: "Input must be a definition Schema")
+				throw ModelGenError.RuntimeError(message: "[R.protocols]: Input must be a definition Schema")
 			}
 			var mainProtocols: [String] = []
 			if schema.isListResource {
@@ -82,7 +82,7 @@ extension Extension {
 
 		registerFilter("P.renderDescription") { input in
 			guard let property = input as? Property else {
-				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[P.renderDescription]: Input must be a Property: \(String(describing: input))")
 			}
 			let indentedNewLine = "\n\t\t///"
 			let description = property.description
@@ -97,7 +97,7 @@ extension Extension {
 
 		registerFilter("P.render") { input in
 			guard let property = input as? Property else {
-				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[P.render]: Input must be a Property: \(String(describing: input))")
 			}
 
 			let varOrLet = { () -> String in
@@ -134,7 +134,7 @@ extension Extension {
 
 		registerFilter("P.renderArg") { input in
 			guard let property = input as? Property else {
-				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[P.renderArg]: Input must be a Property: \(String(describing: input))")
 			}
 
 			let name = { () -> String in
@@ -154,7 +154,7 @@ extension Extension {
 
 		registerFilter("P.renderArgDefaultNil") { input in
 			guard let property = input as? Property else {
-				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[P.renderArgDefaultNil]: Input must be a Property: \(String(describing: input))")
 			}
 
 			if property.isOptional {
@@ -166,14 +166,14 @@ extension Extension {
 
 		registerFilter("P.type") { input in
 			guard let property = input as? Property else {
-				throw ModelGenError.RuntimeError(message: "Input must be a Property: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[P.type]: Input must be a Property: \(String(describing: input))")
 			}
 			return "\(property.type.renderedType)"
 		}
 
 		registerFilter("P.escapeKeywords") { input in
 			guard let name = input as? String else {
-				throw ModelGenError.RuntimeError(message: "Input must be a String: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[P.escapeKeywords]: Input must be a String: \(String(describing: input))")
 			}
 
 			let keywords = Set(["continue", "default", "operator", "protocol"])
@@ -186,58 +186,65 @@ extension Extension {
 
 		registerFilter("GVK.group") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.group]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedGroup)"
 		}
 
 		registerFilter("GVK.version") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.version]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedVersion)"
 		}
 
 		registerFilter("GVK.case") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.case]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedCase)"
 		}
 
 		registerFilter("GVK.full") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.full]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedFull)"
 		}
 
 		registerFilter("GVK.type") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.type]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedTypeCase)"
 		}
 
 		registerFilter("GVK.plural") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.plural]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedPluralName)"
 		}
 
 		registerFilter("GVK.short") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.short]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return (gvk.renderedShortName != nil) ? "\"\(gvk.renderedShortName!)\"" : "nil"
 		}
 
 		registerFilter("GVK.nsScope") { input in
 			guard let gvk = input as? GroupVersionKind else {
-				throw ModelGenError.RuntimeError(message: "Input must be a GroupVersionKind: \(String(describing: input))")
+				throw ModelGenError.RuntimeError(message: "[GVK.nsScope]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedNamespaceScope)"
+		}
+
+		registerFilter("GV.type") { input in
+			guard let gv = input as? GroupVersion else {
+				throw ModelGenError.RuntimeError(message: "[GV.type]: Input must be a GroupVersion: \(String(describing: input))")
+			}
+			return "\(gv.renderedCase)"
 		}
 	}
 }

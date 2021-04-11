@@ -58,4 +58,25 @@ extension String {
 	mutating func capitalizeFirstLetter() {
 		self = capitalizingFirstLetter()
 	}
+
+	func lowercasingFirstLetter() -> String {
+		prefix(1).lowercased() + dropFirst()
+	}
+
+	mutating func lowercaseFirstLetter() {
+		self = lowercasingFirstLetter()
+	}
+
+	func camelCased() -> String {
+		guard !isEmpty else {
+			return ""
+		}
+
+		let parts = components(separatedBy: CharacterSet.alphanumerics.inverted)
+
+		let first = String(describing: parts.first!).lowercasingFirstLetter()
+		let rest = parts.dropFirst().map { String($0).capitalizingFirstLetter() }
+
+		return ([first] + rest).joined(separator: "")
+	}
 }

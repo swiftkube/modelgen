@@ -146,3 +146,22 @@ extension String {
 		}
 	}
 }
+
+struct GroupVersion: Decodable, Hashable {
+
+	let group: String
+	let version: String
+
+	init(group: String, version: String) {
+		self.group = group
+		self.version = version
+	}
+
+	var renderedCase: String {
+		let groupCamelCased = String(group.prefix(while: { $0 != "." })).camelCased()
+
+		return (group == "" || group == "core")
+			? "Core\(version.capitalized)"
+			: "\(groupCamelCased)\(version.capitalized)"
+	}
+}
