@@ -48,9 +48,13 @@ struct GroupVersionKind: Decodable, Hashable {
 	}
 
 	var renderedCase: String {
-		(group == "" || group == "core")
-			? "core\(version.capitalized)\(kind.capitalizingFirstLetter())"
-			: "\(String(group.prefix(while: { $0 != "." })))\(version.capitalized)\(kind.capitalizingFirstLetter())"
+		if group == "" || group == "core" {
+			return "core\(version.capitalized)\(kind.capitalizingFirstLetter())"
+		}
+
+		let group = String(group.prefix(while: { $0 != "." }))
+
+		return "\(group)\(version.capitalized)\(kind.capitalizingFirstLetter())"
 	}
 
 	var renderedFull: String {
@@ -60,9 +64,16 @@ struct GroupVersionKind: Decodable, Hashable {
 	}
 
 	var renderedTypeCase: String {
-		(group == "" || group == "core")
-			? "core.\(version).\(kind)"
-			: "\(String(group.prefix(while: { $0 != "." }))).\(version).\(kind)"
+		if group == "" || group == "core" {
+			return "core.\(version).\(kind)"
+		}
+
+		var sanitizedGroup = String(group.prefix(while: { $0 != "." }))
+		if Keywords.contains(sanitizedGroup) {
+			sanitizedGroup = "`\(sanitizedGroup)`"
+		}
+
+		return "\(sanitizedGroup).\(version).\(kind)"
 	}
 
 	var renderedPluralName: String {

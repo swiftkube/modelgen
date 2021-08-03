@@ -22,7 +22,7 @@
 
 import Foundation
 
-public extension {{ type.group }}.{{ type.version }} {
+public extension {{ type.group|P.escapeKeywords }}.{{ type.version }} {
 
 	{{ resource|R.renderDescription }}
 	struct {{ type.kind }}: {{ resource|R.protocols }}
@@ -31,14 +31,14 @@ public extension {{ type.group }}.{{ type.version }} {
 		///
 		/// KubernetesResourceList.Item associated type
 		///
-		public typealias Item = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+		public typealias Item = {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.listItemKind }}
 {% endif %}
 {% if resource.isListableResource %}
 
 		///
 		/// ListableResource.List associated type
 		///
-		public typealias List = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}List
+		public typealias List = {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.listItemKind }}List
 {% endif %}
 
 {% for property in resource.properties %}
@@ -50,7 +50,7 @@ public extension {{ type.group }}.{{ type.version }} {
 		public init(
 
 {% for property in resource.properties where property.constValue == nil %}
-			{{ property|P.renderArg}}{{ property|P.renderArgDefaultNil }}{% if not forloop.last %},{% endif %}{% endfor %}
+			{{ property|P.renderArg }}{{ property|P.renderArgDefaultNil }}{% if not forloop.last %},{% endif %}{% endfor %}
 		) {
 
 {% for property in resource.properties where property.constValue == nil %}
@@ -62,7 +62,7 @@ public extension {{ type.group }}.{{ type.version }} {
 ///
 /// Codable conformance
 ///
-public extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
+public extension {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.kind }} {
 
 	private enum CodingKeys: String, CodingKey {
 {% for property in resource.properties %}
@@ -79,22 +79,22 @@ public extension {{ type.group }}.{{ type.version }}.{{ type.kind }} {
 	}
 
 	func encode(to encoder: Encoder) throws {
-		var container = encoder.container(keyedBy: CodingKeys.self)
+		var encodingContainer = encoder.container(keyedBy: CodingKeys.self)
 {% for property in resource.properties %}
-		try container.encode({{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }}){% endfor %}
+		try encodingContainer.encode({{ property.name|P.escapeKeywords }}, forKey: .{{ property.name|P.escapeKeywords }}){% endfor %}
 	}
 }{% endif %}{% if resource.isListResource %}
 
-// MARK: - {{ type.group }}.{{ type.version }}.{{ type.kind }} + Sequence
+// MARK: - {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.kind }} + Sequence
 
 ///
 /// Sequence iterator for KubernetesResourceList items
 ///
-extension {{ type.group }}.{{ type.version }}.{{ type.kind }}: Sequence {
+extension {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.kind }}: Sequence {
 
-	public typealias Element = {{ type.group }}.{{ type.version }}.{{ type.listItemKind }}
+	public typealias Element = {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.listItemKind }}
 
-	public func makeIterator() -> AnyIterator<{{ type.group }}.{{ type.version }}.{{ type.listItemKind }}> {
+	public func makeIterator() -> AnyIterator<{{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.listItemKind }}> {
 		AnyIterator(items.makeIterator())
 	}
 }{% endif %}

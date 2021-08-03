@@ -24,6 +24,6 @@ import Foundation
 ///
 /// Namespace for `{{ type.group }}.{{ type.version }}`
 ///
-public extension {{ type.group }} {
+public extension {{ type.group|P.escapeKeywords }} {
 	enum {{ type.version }} {}
 }

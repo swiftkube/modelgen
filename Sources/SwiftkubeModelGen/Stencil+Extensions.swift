@@ -126,8 +126,7 @@ extension Extension {
 
 			let name = { () -> String in
 				let name = property.name!
-				let keywords = Set(["continue", "default", "operator", "protocol"])
-				guard !keywords.contains(name) else {
+				guard !Keywords.contains(name) else {
 					return "`\(name)`"
 				}
 				return name
@@ -155,8 +154,7 @@ extension Extension {
 
 			let name = { () -> String in
 				let name = property.name!
-				let keywords = Set(["continue", "default", "operator", "protocol"])
-				guard !keywords.contains(name) else {
+				guard !Keywords.contains(name) else {
 					return "`\(name)`"
 				}
 				return name
@@ -192,8 +190,7 @@ extension Extension {
 				throw ModelGenError.RuntimeError(message: "[P.escapeKeywords]: Input must be a String: \(String(describing: input))")
 			}
 
-			let keywords = Set(["continue", "default", "operator", "protocol"])
-			guard !keywords.contains(name) else {
+			guard !Keywords.contains(name) else {
 				return "`\(name)`"
 			}
 

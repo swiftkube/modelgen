@@ -17,7 +17,9 @@
 import Foundation
 
 let TypePrefixes = Set([
+	"apiserver",
 	"io.k8s.api.",
+	"io.k8s.api.apiserver",
 	"io.k8s.apiextensions-apiserver.pkg.apis.",
 	"io.k8s.apimachinery.pkg.apis.",
 	"io.k8s.kube-aggregator.pkg.apis.",
@@ -109,6 +111,7 @@ let PluralNames = [
 	"ServiceAccount":                 "serviceaccounts",
 	"StatefulSet":                    "statefulsets",
 	"StorageClass":                   "storageclasses",
+	"StorageVersion":                 "storageversions",
 	"SubjectAccessReview":            "subjectaccessreviews",
 	"TokenRequest":                   "tokenrequests",
 	"TokenReview":                    "tokenreviews",
@@ -146,3 +149,5 @@ let ShortNames = [
 	"StatefulSet":                    "sts",
 	"StorageClass":                   "sc",
 ]
+
+let Keywords = Set(["continue", "default", "internal", "operator", "protocol"])

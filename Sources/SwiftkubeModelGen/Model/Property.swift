@@ -133,7 +133,11 @@ indirect enum PropertyType {
 			case let ref where ConvertedTypes.keys.contains(ref):
 				return ConvertedTypes[ref]!.renderedType
 			default:
-				return "\(typeReference.group).\(typeReference.version).\(typeReference.kind)"
+				var group = typeReference.group
+				if Keywords.contains(group) {
+					group = "`\(group)`"
+				}
+				return "\(group).\(typeReference.version).\(typeReference.kind)"
 			}
 		case .any:
 			return "Any"
