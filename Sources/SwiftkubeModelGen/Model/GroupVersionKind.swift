@@ -52,9 +52,9 @@ struct GroupVersionKind: Decodable, Hashable {
 			return "core\(version.capitalized)\(kind.capitalizingFirstLetter())"
 		}
 
-		let group = String(group.prefix(while: { $0 != "." }))
+		let sanitizedGroup = String(group.prefix(while: { $0 != "." }))
 
-		return "\(group)\(version.capitalized)\(kind.capitalizingFirstLetter())"
+		return "\(sanitizedGroup)\(version.capitalized)\(kind.capitalizingFirstLetter())"
 	}
 
 	var renderedFull: String {
