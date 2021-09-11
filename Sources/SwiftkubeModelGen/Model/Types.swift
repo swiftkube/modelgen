@@ -150,4 +150,29 @@ let ShortNames = [
 	"StorageClass":                   "sc",
 ]
 
+let APIGroups = [
+	"admissionregistration.k8s.io":   "AdmissionRegistration",
+	"apiextensions.k8s.io":           "APIExtensions",
+	"apiregistration.k8s.io":         "APIRegistration",
+	"apps":                           "Apps",
+	"authentication.k8s.io":          "Authentication",
+	"authorization.k8s.io":           "Authorization",
+	"autoscaling":                    "AutoScaling",
+	"batch":                          "Batch",
+	"certificates.k8s.io":            "Certificates",
+	"coordination.k8s.io":            "Coordination",
+	"core":                           "Core",
+	"discovery.k8s.io":               "Discovery",
+	"events.k8s.io":                  "Events",
+	"extensions":                     "Extensions",
+	"flowcontrol.apiserver.k8s.io":   "FlowControl",
+	"internal.apiserver.k8s.io":      "Internal",
+	"networking.k8s.io":              "Networking",
+	"node.k8s.io":                    "Node",
+	"policy":                         "Policy",
+	"rbac.authorization.k8s.io":      "RBAC",
+	"scheduling.k8s.io":              "Scheduling",
+	"storage.k8s.io":                 "Storage",
+]
+
 let Keywords = Set(["continue", "default", "internal", "operator", "protocol"])

@@ -88,6 +88,10 @@ struct GroupVersionKind: Decodable, Hashable {
 		ResourceScope[self] ?? false
 	}
 
+	var renderedPluralVariableName: String {
+		kind.variableName(with: PluralNames[kind]!)
+	}
+
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(group)
 		hasher.combine(version)
@@ -156,6 +160,12 @@ extension String {
 			return (str, "")
 		}
 	}
+
+	func variableName(with plural: String) -> String {
+		let common = self.commonPrefix(with: plural, options: .caseInsensitive)
+		let idx = plural.index(plural.startIndex, offsetBy: common.count)
+		return common + plural.suffix(from: idx)
+	}
 }
 
 struct GroupVersion: Decodable, Hashable {
@@ -168,11 +178,15 @@ struct GroupVersion: Decodable, Hashable {
 		self.version = version
 	}
 
-	var renderedCase: String {
-		let groupCamelCased = String(group.prefix(while: { $0 != "." })).camelCased()
-
+	var renderedType: String {
 		return (group == "" || group == "core")
 			? "Core\(version.capitalized)"
-			: "\(groupCamelCased)\(version.capitalized)"
+			: "\(APIGroups[group]!)\(version.capitalized)"
+	}
+
+	var renderedRaw: String {
+		return (group == "" || group == "core")
+			? "core.\(version)"
+			: "\(group).\(version)"
 	}
 }

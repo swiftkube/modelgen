@@ -95,7 +95,7 @@ struct RenderClientDSL: PipelineStep {
 
 		try groupVersions
 			.flatMap { (key: GroupVersion, value: [ResourceContext]) in
-				makeSteps(gv: key, resources: value.map(\.resource))
+				makeSteps(gv: key, resources: value.map(\.resource).sorted())
 			}
 			.forEach { (step: PipelineStep) in
 				try step.process(basePath: basePath, cotext: cotext)

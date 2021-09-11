@@ -38,6 +38,13 @@ class JSONSchemaProcessor {
 
 	private func generateJSONSchema(outputPath: PathKit.Path) throws -> PathKit.Path {
 		let jsonSchemaPath = outputPath + Path("schema-\(apiVersion)")
+		let definitionsPath = jsonSchemaPath + Path("_definitions.json")
+
+		if definitionsPath.exists {
+			print("Schema exists already, nothing todo.")
+			return definitionsPath
+		}
+
 		let openAPIURL = "https://raw.githubusercontent.com/kubernetes/kubernetes/\(apiVersion)/api/openapi-spec/swagger.json"
 
 		_ = try shellOut(to: "/usr/local/bin/openapi2jsonschema", arguments: [
@@ -47,7 +54,7 @@ class JSONSchemaProcessor {
 			openAPIURL,
 		])
 
-		return jsonSchemaPath + Path("_definitions.json")
+		return definitionsPath
 	}
 
 	private func loadAndDecodeJson<T: Decodable>(url: URL, type: T.Type) throws -> T {

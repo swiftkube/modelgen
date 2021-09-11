@@ -239,6 +239,24 @@ extension Extension {
 			return "\(gvk.renderedPluralName)"
 		}
 
+		registerFilter("GVK.pluralVariable") { input in
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "[GVK.pluralVariable]: Input must be a GroupVersionKind: \(String(describing: input))")
+			}
+
+			let name = gvk.renderedPluralVariableName
+
+			if name.hasPrefix("API") {
+				return "api" + name.dropFirst(3)
+			} else if name.hasPrefix("CSI") {
+				return "csi" + name.dropFirst(3)
+			} else if name.hasPrefix("RBAC") {
+				return "rbac" + name.dropFirst(4)
+			} else {
+				return "\(name.lowercasingFirstLetter())"
+			}
+		}
+
 		registerFilter("GVK.short") { input in
 			guard let gvk = input as? GroupVersionKind else {
 				throw ModelGenError.RuntimeError(message: "[GVK.short]: Input must be a GroupVersionKind: \(String(describing: input))")
@@ -257,7 +275,32 @@ extension Extension {
 			guard let gv = input as? GroupVersion else {
 				throw ModelGenError.RuntimeError(message: "[GV.type]: Input must be a GroupVersion: \(String(describing: input))")
 			}
-			return "\(gv.renderedCase)"
+			return "\(gv.renderedType)"
+		}
+
+		registerFilter("GV.typeVariable") { input in
+			guard let gv = input as? GroupVersion else {
+				throw ModelGenError.RuntimeError(message: "[GV.type]: Input must be a GroupVersion: \(String(describing: input))")
+			}
+
+			let type = gv.renderedType
+
+			if type.hasPrefix("API") {
+				return "api" + type.dropFirst(3)
+			} else if type.hasPrefix("CSI") {
+				return "csi" + type.dropFirst(3)
+			} else if type.hasPrefix("RBAC") {
+				return "rbac" + type.dropFirst(4)
+			} else {
+				return "\(type.lowercasingFirstLetter())"
+			}
+		}
+
+		registerFilter("GV.raw") { input in
+			guard let gv = input as? GroupVersion else {
+				throw ModelGenError.RuntimeError(message: "[GV.type]: Input must be a GroupVersion: \(String(describing: input))")
+			}
+			return "\(gv.renderedRaw)"
 		}
 	}
 }

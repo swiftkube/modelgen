@@ -21,11 +21,10 @@ import SwiftkubeModel
 
 public protocol {{ groupVersion|GV.type }}API {
 {% for resource in resources %}
-	var {{ resource.gvk|GVK.plural }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> { get }
-{% endfor %}
+	var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> { get }{% endfor %}
 }
 
-/// DSL for `{{ groupVersion|GV.type }}` API Group
+/// DSL for `{{ groupVersion|GV.raw }}` API Group
 public extension KubernetesClient {
 
 	class {{ groupVersion|GV.type }}: {{ groupVersion|GV.type }}API {
@@ -35,13 +34,12 @@ public extension KubernetesClient {
 			self.client = client
 		}
 {% for resource in resources %}
-		public var {{ resource.gvk|GVK.plural }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> {
+		public var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> {
 			client.{% if resource.isNamespaced %}namespaceScoped{% else %}clusterScoped{% endif%}(for: {{ resource.gvk|GVK.type }}.self)
-		}
-{% endfor %}
+		}{% endfor %}
 	}
 
-	var {{ groupVersion|GV.type }}: {{ groupVersion|GV.type }}API {
+	var {{ groupVersion|GV.typeVariable }}: {{ groupVersion|GV.type }}API {
 		{{ groupVersion|GV.type }}(self)
 	}
 }

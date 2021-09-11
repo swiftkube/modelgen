@@ -67,6 +67,7 @@ struct ModelGen: ParsableCommand {
 		let environment = makeStencilEnv(templatesPath: templatesPath)
 
 		try Pipeline(steps: [
+			RenderClientDSL(environment: environment),
 			RenderTemplate(environment: environment, template: GroupVersionKindTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionKindAPIResourceTemplate()),
 			RenderTemplate(environment: environment, template: AnyKubernetesAPIResourceTemplate()),
@@ -109,4 +110,11 @@ struct ModelGen: ParsableCommand {
 	}
 }
 
-ModelGen.main()
+ModelGen.main(
+	 [
+	 	"-a", "v1.20.9",
+	 	"-t", "/Users/iska/Basement/swiftkube/modelgen/templates/model",
+	 	"-o", "/Users/iska/Basement/swiftkube/modelgen/out",
+	 	"--clear"
+	 ]
+)
