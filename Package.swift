@@ -12,7 +12,7 @@ let package = Package(
 	],
 	targets: [
 		.target(
-			name: "swiftkube-modelgen",
+			name: "skgen",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 				.product(name: "Stencil", package: "Stencil"),
