@@ -17,12 +17,21 @@
 import Foundation
 import PathKit
 
-struct GroupVersionKindTemplate: TemplateType {
+struct GroupVersionKindResourceNameTemplate: TemplateType {
 
-	let stencilTemplate = "GroupVersionKind.swift.stencil"
+	let stencilTemplate = "GroupVersionKind+ResourceName.swift.stencil"
 
 	func destination(basePath: Path) -> Path {
-		return basePath + Path("GroupVersionKind.swift")
+		basePath + Path("GroupVersionKind+ResourceName.swift")
+	}
+}
+
+struct GroupVersionKindDefaultResourcesTemplate: TemplateType {
+
+	let stencilTemplate = "GroupVersionKind+DefaultResources.swift.stencil"
+
+	func destination(basePath: Path) -> Path {
+		basePath + Path("GroupVersionKind+DefaultResources.swift")
 	}
 }
 
@@ -31,7 +40,25 @@ struct GroupVersionKindAPIResourceTemplate: TemplateType {
 	let stencilTemplate = "GroupVersionKind+KubernetesAPIResource.swift.stencil"
 
 	func destination(basePath: Path) -> Path {
-		return basePath + Path("GroupVersionKind+KubernetesAPIResource.swift")
+		basePath + Path("GroupVersionKind+KubernetesAPIResource.swift")
+	}
+}
+
+struct GroupVersionResourceAPIResourceTemplate: TemplateType {
+
+	let stencilTemplate = "GroupVersionResource+KubernetesAPIResource.swift.stencil"
+
+	func destination(basePath: Path) -> Path {
+		basePath + Path("GroupVersionResource+KubernetesAPIResource.swift")
+	}
+}
+
+struct GroupVersionResourceDefaultResourcesTemplate: TemplateType {
+
+	let stencilTemplate = "GroupVersionResource+DefaultResources.swift.stencil"
+
+	func destination(basePath: Path) -> Path {
+		basePath + Path("GroupVersionResource+DefaultResources.swift")
 	}
 }
 
@@ -40,7 +67,7 @@ struct AnyKubernetesAPIResourceTemplate: TemplateType {
 	let stencilTemplate = "AnyKubernetesAPIResource.swift.stencil"
 
 	func destination(basePath: Path) -> Path {
-		return basePath + Path("AnyKubernetesAPIResource.swift")
+		basePath + Path("AnyKubernetesAPIResource.swift")
 	}
 }
 
@@ -50,11 +77,11 @@ struct GroupTemplate: TemplateType {
 	let typeReference: TypeReference
 
 	func destination(basePath: Path) -> Path {
-		return basePath + Path(typeReference.group) + Path("\(typeReference.group).swift")
+		basePath + Path(typeReference.group) + Path("\(typeReference.group).swift")
 	}
 
-	func stencilContext() -> [String : Any] {
-		return ["type": typeReference]
+	func stencilContext() -> [String: Any] {
+		["type": typeReference]
 	}
 }
 
@@ -64,14 +91,14 @@ struct VersionTemplate: TemplateType {
 	let typeReference: TypeReference
 
 	func destination(basePath: Path) -> Path {
-		return basePath
-			+ Path(typeReference.group)
-			+ Path(typeReference.version)
-			+ Path("\(typeReference.group)+\(typeReference.version).swift")
+		basePath
+				+ Path(typeReference.group)
+				+ Path(typeReference.version)
+				+ Path("\(typeReference.group)+\(typeReference.version).swift")
 	}
 
-	func stencilContext() -> [String : Any] {
-		return ["type": typeReference]
+	func stencilContext() -> [String: Any] {
+		["type": typeReference]
 	}
 }
 
@@ -82,14 +109,14 @@ struct ResourceTemplate: TemplateType {
 	let resource: Resource
 
 	func destination(basePath: Path) -> Path {
-		return basePath
-			+ Path(typeReference.group)
-			+ Path(typeReference.version)
-			+ Path("\(typeReference.kind)+\(typeReference.group).\(typeReference.version).swift")
+		basePath
+				+ Path(typeReference.group)
+				+ Path(typeReference.version)
+				+ Path("\(typeReference.kind)+\(typeReference.group).\(typeReference.version).swift")
 	}
 
-	func stencilContext() -> [String : Any] {
-		return [
+	func stencilContext() -> [String: Any] {
+		[
 			"type": typeReference,
 			"resource": resource
 		]
@@ -106,13 +133,13 @@ struct ClientAPIDSLTemplate: TemplateType {
 		let shortGroupName = String(groupVersion.group.prefix(while: { $0 != "." }))
 
 		return basePath
-			+ Path("client")
-			+ Path("DSL")
-			+ Path("KubernetesClient+\(shortGroupName).\(groupVersion.version).swift")
+				+ Path("client")
+				+ Path("DSL")
+				+ Path("KubernetesClient+\(shortGroupName).\(groupVersion.version).swift")
 	}
 
-	func stencilContext() -> [String : Any] {
-		return [
+	func stencilContext() -> [String: Any] {
+		[
 			"groupVersion": groupVersion,
 			"resources": resources
 		]

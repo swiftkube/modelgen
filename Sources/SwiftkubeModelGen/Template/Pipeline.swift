@@ -19,16 +19,16 @@ import PathKit
 import Stencil
 
 protocol PipelineStep {
-	func process(basePath: Path, cotext: TemplateContex) throws
+	func process(basePath: Path, cotext: TemplateContext) throws
 }
 
 struct Pipeline {
 
 	let steps: [PipelineStep]
 
-	func process(basePath: Path, cotext: TemplateContex) throws {
+	func process(basePath: Path, context: TemplateContext) throws {
 		try steps.forEach {
-			try $0.process(basePath: basePath, cotext: cotext)
+			try $0.process(basePath: basePath, cotext: context)
 		}
 	}
 }
@@ -38,7 +38,7 @@ struct RenderTemplate: PipelineStep {
 	let environment: Environment
 	let template: TemplateType
 
-	func process(basePath: Path, cotext: TemplateContex) throws {
+	func process(basePath: Path, cotext: TemplateContext) throws {
 		var stencilContext = cotext.stencilContext()
 		stencilContext.merge(template.stencilContext()) { (_, new) in new }
 
@@ -52,7 +52,7 @@ struct MakeDirectories: PipelineStep {
 
 	let dirs: [String]
 
-	func process(basePath: Path, cotext: TemplateContex) throws {
+	func process(basePath: Path, cotext: TemplateContext) throws {
 		try dirs.reduce(basePath, +).mkpath()
 	}
 }
@@ -61,7 +61,7 @@ struct RenderResources: PipelineStep {
 
 	let environment: Environment
 
-	func process(basePath: Path, cotext: TemplateContex) throws {
+	func process(basePath: Path, cotext: TemplateContext) throws {
 		try cotext.resources
 			.flatMap(makeSteps(resourceContext:))
 			.forEach { (step: PipelineStep) in
@@ -70,7 +70,7 @@ struct RenderResources: PipelineStep {
 	}
 
 	private func makeSteps(resourceContext: ResourceContext) -> [PipelineStep] {
-		let typreReference = resourceContext.typreReference
+		let typreReference = resourceContext.typeReference
 		let resource = resourceContext.resource
 
 		return [
@@ -87,7 +87,7 @@ struct RenderClientDSL: PipelineStep {
 
 	let environment: Environment
 
-	func process(basePath: Path, cotext: TemplateContex) throws {
+	func process(basePath: Path, cotext: TemplateContext) throws {
 		let apiResources = cotext.resources.filter { $0.resource.isAPIResource }
 		let groupVersions = Dictionary(grouping: apiResources) {
 			GroupVersion(group: $0.resource.gvk!.group, version: $0.resource.gvk!.version)
@@ -103,7 +103,7 @@ struct RenderClientDSL: PipelineStep {
 	}
 
 	private func makeSteps(gv: GroupVersion, resources: [Resource]) -> [PipelineStep] {
-		return [
+		[
 			MakeDirectories(dirs: ["client", "DSL"]),
 			RenderTemplate(environment: environment, template: ClientAPIDSLTemplate(groupVersion: gv, resources: resources))
 		]

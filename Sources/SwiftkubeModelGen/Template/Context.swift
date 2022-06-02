@@ -35,19 +35,37 @@ struct MetaContext {
 
 struct ResourceContext {
 	let resource: Resource
-	let typreReference: TypeReference
+	let typeReference: TypeReference
 }
 
-struct TemplateContex {
+struct TemplateContext {
 	let meta: MetaContext
 	let groupVersionKinds: [GroupVersionKind]
 	let resources: [ResourceContext]
 
 	func stencilContext() -> [String: Any] {
+		let newestGroupVersionKinds = groupVersionKinds.removeDuplicates {$0.kind}
+
 		return [
-			"meta": ["modelVersion": meta.modelVersion],
-			"groupVersionKinds": groupVersionKinds,
-			"resources": resources
-		]
+					"meta": ["modelVersion": meta.modelVersion],
+					"groupVersionKinds": groupVersionKinds,
+					"newestGroupVersionKinds": newestGroupVersionKinds,
+					"pluralGroupVersionKinds": newestGroupVersionKinds.filter { gvk in PluralNames.keys.contains(gvk.kind) },
+					"shortGroupVersionKinds": newestGroupVersionKinds.filter { gvk in ShortNames.keys.contains(gvk.kind) },
+					"resources": resources
+				]
+	}
+}
+
+extension Array {
+	func removeDuplicates<T: Hashable>(byProperty: (Element) -> T) -> [Element] {
+		var result = [Element]()
+		var seen = Set<T>()
+		for element in self {
+			if seen.insert(byProperty(element)).inserted {
+				result.append(element)
+			}
+		}
+		return result
 	}
 }

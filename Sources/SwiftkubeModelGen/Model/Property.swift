@@ -18,7 +18,7 @@ import Foundation
 
 // MARK: - PropertyType
 
-indirect enum PropertyType {
+indirect enum PropertyType: Equatable {
 	case string
 	case integer
 	case integer32
@@ -158,7 +158,7 @@ indirect enum PropertyType {
 
 // MARK: - Property
 
-struct Property: Decodable, Comparable {
+struct Property: Decodable, Comparable, Hashable {
 
 	let type: PropertyType
 	let description: String
@@ -166,15 +166,15 @@ struct Property: Decodable, Comparable {
 	var constValue: String? = nil
 	var required: Bool = false
 
-	var isContant: Bool {
+	var isConstant: Bool {
 		constValue != nil
 	}
 
 	var isOptional: Bool {
-		!isContant && !required
+		!isConstant && !required
 	}
 
-	static func < (lhs: Property, rhs: Property) -> Bool {
+	static func <(lhs: Property, rhs: Property) -> Bool {
 		switch (lhs.name, rhs.name) {
 		case ("apiVersion", _):
 			return true
@@ -193,7 +193,7 @@ struct Property: Decodable, Comparable {
 		}
 	}
 
-	static func == (lhs: Property, rhs: Property) -> Bool {
+	static func ==(lhs: Property, rhs: Property) -> Bool {
 		lhs.name == rhs.name
 	}
 
@@ -209,17 +209,21 @@ struct Property: Decodable, Comparable {
 
 	init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
-		self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
+		description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
 		if let type = try container.decodeIfPresent(Type.self, forKey: .type) {
 			self.type = try PropertyType(from: type, container: container)
 		} else {
 			let reference = try container.decode(String.self, forKey: .ref)
 			let typeReference = TypeReference(ref: reference)
-			self.type = .ref(typeRef: typeReference)
+			type = .ref(typeRef: typeReference)
 		}
 
 		if let constValue = try container.decodeIfPresent([String].self, forKey: .enumeration)?.first {
 			self.constValue = constValue
 		}
+	}
+
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(name)
 	}
 }

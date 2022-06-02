@@ -39,8 +39,8 @@ struct GroupVersionKind: Decodable, Hashable {
 
 	var renderedGroup: String {
 		(group == "" || group == "core")
-			? "core"
-			: "\(group)"
+				? "core"
+				: "\(group)"
 	}
 
 	var renderedVersion: String {
@@ -59,8 +59,8 @@ struct GroupVersionKind: Decodable, Hashable {
 
 	var renderedFull: String {
 		(group == "" || group == "core")
-			? "\(version)/\(kind)"
-			: "\(group)/\(version)/\(kind)"
+				? "\(version)/\(kind)"
+				: "\(group)/\(version)/\(kind)"
 	}
 
 	var renderedTypeCase: String {
@@ -89,7 +89,10 @@ struct GroupVersionKind: Decodable, Hashable {
 	}
 
 	var renderedPluralVariableName: String {
-		kind.variableName(with: PluralNames[kind]!)
+		if !PluralNames.keys.contains(kind) {
+			fatalError("Update PluralNames: \(kind)")
+		}
+		return kind.variableName(with: PluralNames[kind]!)
 	}
 
 	func hash(into hasher: inout Hasher) {
@@ -102,7 +105,7 @@ struct GroupVersionKind: Decodable, Hashable {
 
 extension GroupVersionKind: Comparable {
 
-	static func < (lhs: GroupVersionKind, rhs: GroupVersionKind) -> Bool {
+	static func <(lhs: GroupVersionKind, rhs: GroupVersionKind) -> Bool {
 		switch (lhs, rhs) {
 		case let (lhs, rhs) where lhs.group < rhs.group:
 			return true
@@ -179,14 +182,14 @@ struct GroupVersion: Decodable, Hashable {
 	}
 
 	var renderedType: String {
-		return (group == "" || group == "core")
-			? "Core\(version.capitalized)"
-			: "\(APIGroups[group]!)\(version.capitalized)"
+		(group == "" || group == "core")
+				? "Core\(version.capitalized)"
+				: "\(APIGroups[group]!)\(version.capitalized)"
 	}
 
 	var renderedRaw: String {
-		return (group == "" || group == "core")
-			? "core.\(version)"
-			: "\(group).\(version)"
+		(group == "" || group == "core")
+				? "core.\(version)"
+				: "\(group).\(version)"
 	}
 }

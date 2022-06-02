@@ -28,16 +28,16 @@ struct TypeReference: Hashable, Comparable {
 	init(ref: String) {
 		self.ref = ref.sanitizedRef()
 		let gvk = self.ref.split(separator: ".", maxSplits: 2, omittingEmptySubsequences: true)
-		self.group = String(gvk[0])
-		self.version = String(gvk[1])
-		self.kind = String(gvk[2])
+		group = String(gvk[0])
+		version = String(gvk[1])
+		kind = String(gvk[2])
 		self.gvk = GroupVersionKind(group: group, version: version, kind: kind)
-		self.listItemKind = kind.deletingSuffix("List")
+		listItemKind = kind.deletingSuffix("List")
 
 		if group == "core" {
-			self.apiVersion = version
+			apiVersion = version
 		} else {
-			self.apiVersion = "\(group)/\(version)"
+			apiVersion = "\(group)/\(version)"
 		}
 	}
 

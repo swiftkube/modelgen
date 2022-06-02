@@ -81,8 +81,11 @@ class OpenAPIProcessor {
 		for path in subResourcePaths {
 			let lastSlash = path.lastIndex(of: "/")!
 			let subResource = path.suffix(from: lastSlash)
-			let parentResourcePath = path.dropLast("/{name}".count + subResource.count)
-			let parentResource = resourceMap[String(parentResourcePath)]!
+			let parentResourcePath = String(path.dropLast("/{name}".count + subResource.count))
+			if !resourceMap.keys.contains(parentResourcePath) {
+				fatalError("Check resourceMap for: \(parentResourcePath)")
+			}
+			let parentResource = resourceMap[parentResourcePath]!
 
 			switch subResource {
 			case "/eviction":

@@ -21,20 +21,9 @@
 
 import Foundation
 
-public extension GroupVersionKind {
+public extension GroupVersionResource {
 
-	/// Creates a new instance of `GroupVersionKind` for the given `KubernetesAPIResource`.
-	///
-	/// - Parameter resource: An instance of a `KubernetesAPIResource`
-	init?<R: KubernetesAPIResource>(of resource: R) {
-		if let gvk = GroupVersionKind(of: "\(resource.apiVersion)/\(resource.kind)") {
-			self = gvk
-		} else {
-			return nil
-		}
-	}
-
-	/// Creates a new instance of `GroupVersionKind` for the given `KubernetesAPIResource` type.
+	/// Creates a new instance of `GroupVersionResource` for the given `KubernetesAPIResource` type.
 	///
 	/// - Parameter type: A type of a `KubernetesAPIResource`, e.g. `core.v1.Pod.self`.
 	init?<R: KubernetesAPIResource>(of type: R.Type) {

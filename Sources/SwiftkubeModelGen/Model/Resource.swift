@@ -79,22 +79,22 @@ class Resource: Decodable, Comparable {
 		let resourceKey = decoder.codingPath.last?.stringValue
 
 		if let _ = IgnoredSchemaTypes.first(where: { resourceKey?.hasPrefix($0) ?? false }) {
-			self.gvk = nil
-			self.type = .null
-			self.description = ""
-			self.required = []
-			self.properties = []
+			gvk = nil
+			type = .null
+			description = ""
+			required = []
+			properties = []
 			return
 		}
 
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
-		self.gvk = try container.decodeIfPresent([GroupVersionKind].self, forKey: .gvk)?.first
-		self.type = try container.decode(Type.self, forKey: .type)
-		self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
-		self.required = try container.decodeIfPresent([String].self, forKey: .required) ?? []
-		self.deprecated = (description.range(of: "deprecated", options: .caseInsensitive) != nil)
-		self.properties = []
+		gvk = try container.decodeIfPresent([GroupVersionKind].self, forKey: .gvk)?.first
+		type = try container.decode(Type.self, forKey: .type)
+		description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
+		required = try container.decodeIfPresent([String].self, forKey: .required) ?? []
+		deprecated = (description.range(of: "deprecated", options: .caseInsensitive) != nil)
+		properties = []
 
 		guard container.allKeys.contains(.properties) else {
 			return
@@ -110,7 +110,7 @@ class Resource: Decodable, Comparable {
 				property.required = true
 			}
 
-			if key.stringValue == "apiVersion", let gvk = self.gvk {
+			if key.stringValue == "apiVersion", let gvk = gvk {
 				if gvk.group.isEmpty {
 					property.constValue = gvk.version
 				} else {
@@ -122,9 +122,9 @@ class Resource: Decodable, Comparable {
 		}
 
 		properties.append(contentsOf: props.sorted())
-		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
-		self.hasMetadata = properties.contains { $0.type.isMetadata }
-		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
+		requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
+		hasMetadata = properties.contains { $0.type.isMetadata }
+		isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 	}
 
 	static func < (lhs: Resource, rhs: Resource) -> Bool {

@@ -53,7 +53,7 @@ public struct AnyKubernetesAPIResource: KubernetesAPIResource {
 		self.metadata = resource.metadata
 	}
 
-	public init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
 		let decodedAPIVersion: String?
@@ -70,23 +70,38 @@ public struct AnyKubernetesAPIResource: KubernetesAPIResource {
 			decodedKind = decoder.userInfo[CodingUserInfoKey.kind] as? String
 		}
 
-		guard let apiVersionString = decodedAPIVersion, let kindString = decodedKind else {
-			throw SwiftkubeModelError.decodingError("Couldn't decode apiVersion and/or kind at: \(container.codingPath)")
+		let decodedPluralName = decoder.userInfo[CodingUserInfoKey.resources] as? String
+
+		if let apiVersion = decodedAPIVersion, let kind = decodedKind {
+			try self.init(gvk: GroupVersionKind(apiVersion: apiVersion, kind: kind), decoder: decoder)
+		} else if let apiVersion = decodedAPIVersion, let pluralName = decodedPluralName {
+			try self.init(gvr: GroupVersionResource(apiVersion: apiVersion, resource: pluralName), decoder: decoder)
+		} else {
+			throw SwiftkubeModelError.decodingError("Couldn't decode resource at: \(container.codingPath)")
 		}
+	}
 
-		let gvk = GroupVersionKind(rawValue: "\(apiVersionString)/\(kindString)")
-
+	public init(gvk: GroupVersionKind?, decoder: Decoder) throws {
 		let decoded: KubernetesAPIResource
 		switch gvk {
 {% for gvk in groupVersionKinds %}
-		case .{{ gvk|GVK.case }}:
+		case GroupVersionKind.{{ gvk|GVK.case }}:
 			decoded = try {{ gvk|GVK.type }}(from: decoder){% endfor %}
 		default:
-			let context = DecodingError.Context(
-				codingPath: [CodingKeys.apiVersion, CodingKeys.kind],
-				debugDescription: "Unknown Kubernetes object gvk: \(String(describing: gvk))"
-			)
-			throw DecodingError.dataCorrupted(context)
+			decoded = try UnstructuredResource(from: decoder)
+		}
+
+		self.init(decoded)
+	}
+
+	public init(gvr: GroupVersionResource?, decoder: Decoder) throws {
+		let decoded: KubernetesAPIResource
+		switch gvr {
+{% for gvk in groupVersionKinds %}
+		case GroupVersionResource.{{ gvk|GVK.case }}:
+			decoded = try {{ gvk|GVK.type }}(from: decoder){% endfor %}
+		default:
+			decoded = try UnstructuredResource(from: decoder)
 		}
 
 		self.init(decoded)

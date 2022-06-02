@@ -21,29 +21,10 @@
 
 import Foundation
 
+///
+/// Known GroupVersionKinds.
+///
 public extension GroupVersionKind {
-
-	/// Creates a new instance of `GroupVersionKind` for the given `KubernetesAPIResource`.
-	///
-	/// - Parameter resource: An instance of a `KubernetesAPIResource`
-	init?<R: KubernetesAPIResource>(of resource: R) {
-		if let gvk = GroupVersionKind(of: "\(resource.apiVersion)/\(resource.kind)") {
-			self = gvk
-		} else {
-			return nil
-		}
-	}
-
-	/// Creates a new instance of `GroupVersionKind` for the given `KubernetesAPIResource` type.
-	///
-	/// - Parameter type: A type of a `KubernetesAPIResource`, e.g. `core.v1.Pod.self`.
-	init?<R: KubernetesAPIResource>(of type: R.Type) {
-		switch type {
 {% for gvk in groupVersionKinds %}
-		case is {{ gvk|GVK.type }}.Type:
-			self = .{{ gvk|GVK.case }}{% endfor %}
-		default:
-			return nil
-		}
-	}
+	static let {{ gvk|GVK.case }} = GroupVersionKind(group: "{{ gvk|GVK.group }}", version: "{{ gvk|GVK.version }}", kind: "{{ gvk|GVK.kind }}"){% endfor %}
 }

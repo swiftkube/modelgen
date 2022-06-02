@@ -69,6 +69,7 @@ let PluralNames = [
 	"CronJob":                        "cronjobs",
 	"CSIDriver":                      "csidrivers",
 	"CSINode":                        "csinodes",
+	"CSIStorageCapacity":             "csistoragecapacities",
 	"CustomResourceDefinition":       "customresourcedefinitions",
 	"DaemonSet":                      "daemonsets",
 	"Deployment":                     "deployments",

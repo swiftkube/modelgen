@@ -117,7 +117,7 @@ extension Extension {
 			}
 
 			let varOrLet = { () -> String in
-				if property.isContant {
+				if property.isConstant {
 					return "let"
 				} else {
 					return "var"
@@ -209,6 +209,13 @@ extension Extension {
 				throw ModelGenError.RuntimeError(message: "[GVK.version]: Input must be a GroupVersionKind: \(String(describing: input))")
 			}
 			return "\(gvk.renderedVersion)"
+		}
+
+		registerFilter("GVK.kind") { input in
+			guard let gvk = input as? GroupVersionKind else {
+				throw ModelGenError.RuntimeError(message: "[GVK.version]: Input must be a GroupVersionKind: \(String(describing: input))")
+			}
+			return "\(gvk.kind)"
 		}
 
 		registerFilter("GVK.case") { input in

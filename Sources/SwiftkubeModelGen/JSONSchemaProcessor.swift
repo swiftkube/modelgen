@@ -41,9 +41,11 @@ class JSONSchemaProcessor {
 		let definitionsPath = jsonSchemaPath + Path("_definitions.json")
 
 		if definitionsPath.exists {
-			print("Schema exists already, nothing todo.")
+			print("Found schema for \(apiVersion) at: \(outputPath)")
 			return definitionsPath
 		}
+
+		print("Writing schema for \(apiVersion) at: \(outputPath)/\(apiVersion)")
 
 		let openAPIURL = "https://raw.githubusercontent.com/kubernetes/kubernetes/\(apiVersion)/api/openapi-spec/swagger.json"
 
