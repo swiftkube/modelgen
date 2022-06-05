@@ -44,6 +44,15 @@ struct GroupVersionKindAPIResourceTemplate: TemplateType {
 	}
 }
 
+struct GroupVersionKindMetaTemplate: TemplateType {
+
+	let stencilTemplate = "GroupVersionKind+Meta.swift.stencil"
+
+	func destination(basePath: Path) -> Path {
+		basePath + Path("GroupVersionKind+Meta.swift")
+	}
+}
+
 struct GroupVersionResourceResourceNameTemplate: TemplateType {
 
 	let stencilTemplate = "GroupVersionResource+ResourceName.swift.stencil"
@@ -68,6 +77,15 @@ struct GroupVersionResourceDefaultResourcesTemplate: TemplateType {
 
 	func destination(basePath: Path) -> Path {
 		basePath + Path("GroupVersionResource+DefaultResources.swift")
+	}
+}
+
+struct GroupVersionResourceMetaTemplate: TemplateType {
+
+	let stencilTemplate = "GroupVersionResource+Meta.swift.stencil"
+
+	func destination(basePath: Path) -> Path {
+		basePath + Path("GroupVersionResource+Meta.swift")
 	}
 }
 
