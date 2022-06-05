@@ -72,6 +72,7 @@ struct ModelGen: ParsableCommand {
 			RenderTemplate(environment: environment, template: GroupVersionKindResourceNameTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionKindDefaultResourcesTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionKindAPIResourceTemplate()),
+			RenderTemplate(environment: environment, template: GroupVersionResourceResourceNameTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionResourceAPIResourceTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionResourceDefaultResourcesTemplate()),
 			RenderTemplate(environment: environment, template: AnyKubernetesAPIResourceTemplate()),
