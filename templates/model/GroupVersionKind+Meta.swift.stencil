@@ -21,10 +21,10 @@
 
 import Foundation
 
-extension GroupVersionKind {
+public extension GroupVersionKind {
 
 	/// Whether the resource is namespaced or not
-	public var namespaced: Bool {
+	var namespaced: Bool {
 		switch kind {
 {% for gvk in newestGroupVersionKinds %}
 		case "{{ gvk|GVK.kind }}":

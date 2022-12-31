@@ -22,6 +22,8 @@
 
 import Foundation
 
+// MARK: - {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.kind }}
+
 public extension {{ type.group|P.escapeKeywords }}.{{ type.version }} {
 
 	{{ resource|R.renderDescription }}
