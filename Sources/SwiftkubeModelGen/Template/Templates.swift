@@ -89,15 +89,6 @@ struct GroupVersionResourceMetaTemplate: TemplateType {
 	}
 }
 
-struct AnyKubernetesAPIResourceTemplate: TemplateType {
-
-	let stencilTemplate = "AnyKubernetesAPIResource.swift.stencil"
-
-	func destination(basePath: Path) -> Path {
-		basePath + Path("AnyKubernetesAPIResource.swift")
-	}
-}
-
 struct GroupTemplate: TemplateType {
 
 	let stencilTemplate = "Group.swift.stencil"
