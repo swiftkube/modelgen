@@ -140,7 +140,7 @@ indirect enum PropertyType: Equatable {
 				return "\(group).\(typeReference.version).\(typeReference.kind)"
 			}
 		case .any:
-			return "JsonField"
+			return "JSONField"
 		default:
 			return "UNKNOWN"
 		}

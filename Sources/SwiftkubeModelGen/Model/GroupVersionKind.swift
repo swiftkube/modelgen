@@ -39,8 +39,8 @@ struct GroupVersionKind: Decodable, Hashable {
 
 	var renderedGroup: String {
 		(group == "" || group == "core")
-				? "core"
-				: "\(group)"
+			? "core"
+			: "\(group)"
 	}
 
 	var renderedVersion: String {
@@ -59,8 +59,8 @@ struct GroupVersionKind: Decodable, Hashable {
 
 	var renderedFull: String {
 		(group == "" || group == "core")
-				? "\(version)/\(kind)"
-				: "\(group)/\(version)/\(kind)"
+			? "\(version)/\(kind)"
+			: "\(group)/\(version)/\(kind)"
 	}
 
 	var renderedTypeCase: String {
@@ -183,13 +183,13 @@ struct GroupVersion: Decodable, Hashable {
 
 	var renderedType: String {
 		(group == "" || group == "core")
-				? "Core\(version.capitalized)"
-				: "\(APIGroups[group]!)\(version.capitalized)"
+			? "Core\(version.capitalized)"
+			: "\(APIGroups[group]!)\(version.capitalized)"
 	}
 
 	var renderedRaw: String {
 		(group == "" || group == "core")
-				? "core.\(version)"
-				: "\(group).\(version)"
+			? "core.\(version)"
+			: "\(group).\(version)"
 	}
 }
