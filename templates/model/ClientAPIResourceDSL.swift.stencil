@@ -19,7 +19,7 @@ import SwiftkubeModel
 
 // MARK: - {{ groupVersion|GV.type }}API
 
-public protocol {{ groupVersion|GV.type }}API {
+public protocol {{ groupVersion|GV.type }}API: Sendable {
 {% for resource in resources %}
 	var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> { get }{% endfor %}
 }
@@ -27,8 +27,8 @@ public protocol {{ groupVersion|GV.type }}API {
 /// DSL for `{{ groupVersion|GV.raw }}` API Group
 public extension KubernetesClient {
 
-	class {{ groupVersion|GV.type }}: {{ groupVersion|GV.type }}API {
-		private var client: KubernetesClient
+	final class {{ groupVersion|GV.type }}: {{ groupVersion|GV.type }}API {
+		private let client: KubernetesClient
 
 		internal init(_ client: KubernetesClient) {
 			self.client = client
