@@ -76,6 +76,7 @@ let PluralNames = [
 	"DaemonSet":                        "daemonsets",
 	"Deployment":                       "deployments",
 	"DeviceClass":                      "deviceclasses",
+	"DeviceTaintRule":                  "devicetaintrules",
 	"Endpoints":                        "endpoints",
 	"EndpointSlice":                    "endpointslices",
 	"Event":                            "events",
