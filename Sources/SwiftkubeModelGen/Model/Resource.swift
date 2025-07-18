@@ -51,21 +51,21 @@ class Resource: Decodable, Comparable {
 	var description: String
 	var required: [String]
 	var properties: [Property]
-	var deprecated: Bool = false
-	var requiresCodableExtension: Bool = false
-	var hasMetadata: Bool = false
-	var isListResource: Bool = false
-	var isAPIResource: Bool = false
-	var isNamespaced: Bool = false
-	var isReadableResource: Bool = false
-	var isListableResource: Bool = false
-	var isCreatableResource: Bool = false
-	var isReplaceableResource: Bool = false
-	var isDeletableResource: Bool = false
-	var isCollectionDeletableResource: Bool = false
-	var isScalableResource: Bool = false
-	var isEvictableResource: Bool = false
-	var hasStatus: Bool = false
+	var deprecated = false
+	var requiresCodableExtension = false
+	var hasMetadata = false
+	var isListResource = false
+	var isAPIResource = false
+	var isNamespaced = false
+	var isReadableResource = false
+	var isListableResource = false
+	var isCreatableResource = false
+	var isReplaceableResource = false
+	var isDeletableResource = false
+	var isCollectionDeletableResource = false
+	var isScalableResource = false
+	var isEvictableResource = false
+	var hasStatus = false
 
 	enum CodingKeys: String, CodingKey {
 		case type
@@ -79,22 +79,22 @@ class Resource: Decodable, Comparable {
 		let resourceKey = decoder.codingPath.last?.stringValue
 
 		if let _ = IgnoredSchemaTypes.first(where: { resourceKey?.hasPrefix($0) ?? false }) {
-			gvk = nil
-			type = .null
-			description = ""
-			required = []
-			properties = []
+			self.gvk = nil
+			self.type = .null
+			self.description = ""
+			self.required = []
+			self.properties = []
 			return
 		}
 
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
-		gvk = try container.decodeIfPresent([GroupVersionKind].self, forKey: .gvk)?.first
-		type = try container.decode(Type.self, forKey: .type)
-		description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
-		required = try container.decodeIfPresent([String].self, forKey: .required) ?? []
-		deprecated = (description.range(of: "deprecated", options: .caseInsensitive) != nil)
-		properties = []
+		self.gvk = try container.decodeIfPresent([GroupVersionKind].self, forKey: .gvk)?.first
+		self.type = try container.decode(Type.self, forKey: .type)
+		self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
+		self.required = try container.decodeIfPresent([String].self, forKey: .required) ?? []
+		self.deprecated = (description.range(of: "deprecated", options: .caseInsensitive) != nil)
+		self.properties = []
 
 		guard container.allKeys.contains(.properties) else {
 			return
@@ -122,9 +122,9 @@ class Resource: Decodable, Comparable {
 		}
 
 		properties.append(contentsOf: props.sorted())
-		requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
-		hasMetadata = properties.contains { $0.type.isMetadata }
-		isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
+		self.requiresCodableExtension = properties.contains { $0.type.requiresCodableExtension }
+		self.hasMetadata = properties.contains { $0.type.isMetadata }
+		self.isListResource = properties.contains(where: { $0.name == "items" }) && gvk?.kind.hasSuffix("List") ?? false
 	}
 
 	static func < (lhs: Resource, rhs: Resource) -> Bool {

@@ -35,8 +35,8 @@ struct SwiftkubeModelGen: ParsableCommand {
 	static let configuration = CommandConfiguration(
 		abstract: "SwiftkubeGenerator",
 		discussion: """
-			Model and code generator for the Swiftkube tooling
-			""",
+		Model and code generator for the Swiftkube tooling
+		""",
 		subcommands: [ModelGen.self, Diff.self]
 	)
 }

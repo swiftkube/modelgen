@@ -164,7 +164,7 @@ struct Property: Decodable, Comparable, Hashable {
 	let description: String
 	var name: String!
 	var constValue: String? = nil
-	var required: Bool = false
+	var required = false
 
 	var isConstant: Bool {
 		constValue != nil
@@ -174,7 +174,7 @@ struct Property: Decodable, Comparable, Hashable {
 		!isConstant && !required
 	}
 
-	static func <(lhs: Property, rhs: Property) -> Bool {
+	static func < (lhs: Property, rhs: Property) -> Bool {
 		switch (lhs.name, rhs.name) {
 		case ("apiVersion", _):
 			return true
@@ -193,7 +193,7 @@ struct Property: Decodable, Comparable, Hashable {
 		}
 	}
 
-	static func ==(lhs: Property, rhs: Property) -> Bool {
+	static func == (lhs: Property, rhs: Property) -> Bool {
 		lhs.name == rhs.name
 	}
 
@@ -209,13 +209,13 @@ struct Property: Decodable, Comparable, Hashable {
 
 	init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
-		description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
+		self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? "No description"
 		if let type = try container.decodeIfPresent(Type.self, forKey: .type) {
 			self.type = try PropertyType(from: type, container: container)
 		} else {
 			let reference = try container.decode(String.self, forKey: .ref)
 			let typeReference = TypeReference(ref: reference)
-			type = .ref(typeRef: typeReference)
+			self.type = .ref(typeRef: typeReference)
 		}
 
 		if let constValue = try container.decodeIfPresent([String].self, forKey: .enumeration)?.first {

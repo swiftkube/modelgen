@@ -18,9 +18,13 @@ import Foundation
 import PathKit
 import Stencil
 
+// MARK: - PipelineStep
+
 protocol PipelineStep {
 	func process(basePath: Path, cotext: TemplateContext) throws
 }
+
+// MARK: - Pipeline
 
 struct Pipeline {
 
@@ -33,6 +37,8 @@ struct Pipeline {
 	}
 }
 
+// MARK: - RenderTemplate
+
 struct RenderTemplate: PipelineStep {
 
 	let environment: Environment
@@ -40,13 +46,15 @@ struct RenderTemplate: PipelineStep {
 
 	func process(basePath: Path, cotext: TemplateContext) throws {
 		var stencilContext = cotext.stencilContext()
-		stencilContext.merge(template.stencilContext()) { (_, new) in new }
+		stencilContext.merge(template.stencilContext()) { _, new in new }
 
 		let rendered = try environment.renderTemplate(name: template.stencilTemplate, context: stencilContext)
 		let filePath = template.destination(basePath: basePath)
 		try filePath.write(rendered.cleanupWhitespace(), encoding: .utf8)
 	}
 }
+
+// MARK: - MakeDirectories
 
 struct MakeDirectories: PipelineStep {
 
@@ -56,6 +64,8 @@ struct MakeDirectories: PipelineStep {
 		try dirs.reduce(basePath, +).mkpath()
 	}
 }
+
+// MARK: - RenderResources
 
 struct RenderResources: PipelineStep {
 
@@ -77,18 +87,19 @@ struct RenderResources: PipelineStep {
 			MakeDirectories(dirs: [typreReference.group, typreReference.version]),
 			RenderTemplate(environment: environment, template: GroupTemplate(typeReference: typreReference)),
 			RenderTemplate(environment: environment, template: VersionTemplate(typeReference: typreReference)),
-			RenderTemplate(environment: environment, template: ResourceTemplate(typeReference: typreReference, resource: resource))
+			RenderTemplate(environment: environment, template: ResourceTemplate(typeReference: typreReference, resource: resource)),
 		]
 	}
 }
 
+// MARK: - RenderClientDSL
 
 struct RenderClientDSL: PipelineStep {
 
 	let environment: Environment
 
 	func process(basePath: Path, cotext: TemplateContext) throws {
-		let apiResources = cotext.resources.filter { $0.resource.isAPIResource }
+		let apiResources = cotext.resources.filter(\.resource.isAPIResource)
 		let groupVersions = Dictionary(grouping: apiResources) {
 			GroupVersion(group: $0.resource.gvk!.group, version: $0.resource.gvk!.version)
 		}
@@ -105,7 +116,7 @@ struct RenderClientDSL: PipelineStep {
 	private func makeSteps(gv: GroupVersion, resources: [Resource]) -> [PipelineStep] {
 		[
 			MakeDirectories(dirs: ["client", "DSL"]),
-			RenderTemplate(environment: environment, template: ClientAPIDSLTemplate(groupVersion: gv, resources: resources))
+			RenderTemplate(environment: environment, template: ClientAPIDSLTemplate(groupVersion: gv, resources: resources)),
 		]
 	}
 }

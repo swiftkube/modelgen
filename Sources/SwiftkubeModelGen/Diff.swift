@@ -16,14 +16,14 @@
 
 import Foundation
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 import ArgumentParser
 import PathKit
 import ShellOut
 import Stencil
 
-// MARK: - ModelGen
+// MARK: - Diff
 
 struct Diff: ParsableCommand {
 	static let configuration = CommandConfiguration(
@@ -38,10 +38,10 @@ struct Diff: ParsableCommand {
 	var output: String
 
 	@Option(name: .shortAndLong, help: "Schema output directory")
-	var schemaOutput: String = "/tmp/swiftkube"
+	var schemaOutput = "/tmp/swiftkube"
 
 	@Flag(help: "Clear output directory")
-	var clear: Bool = false
+	var clear = false
 
 	mutating func run() throws {
 		let outputPath = Path(output).absolute()
@@ -57,7 +57,6 @@ struct Diff: ParsableCommand {
 			try? outputPath.delete()
 		}
 		try outputPath.mkpath()
-
 
 		var schema1198 = try JSONSchemaProcessor(apiVersion: "v1.19.8").process(outputPath: schemaOutputPath)
 		var schema1209 = try JSONSchemaProcessor(apiVersion: "v1.20.9").process(outputPath: schemaOutputPath)
@@ -78,7 +77,7 @@ struct Diff: ParsableCommand {
 				continue
 			}
 
-			z.forEach { prop in
+			for prop in z {
 				if lhs.properties.contains(prop) {
 					print("\(lhs.gvk): \(prop.name) Deleted")
 				} else {
@@ -103,7 +102,7 @@ struct Diff: ParsableCommand {
 				continue
 			}
 
-			z.forEach { prop in
+			for prop in z {
 				if lhs.properties.contains(prop) {
 					print("\(lhs.gvk): \(prop.name) Deleted")
 				} else {

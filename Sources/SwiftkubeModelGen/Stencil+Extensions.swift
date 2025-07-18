@@ -87,7 +87,7 @@ extension Extension {
 			let renderedVerbs = verbsProtocols.joined(separator: ", ")
 			let renderedAdditional = additionalProtocols.joined(separator: ", ")
 
-			if verbsProtocols.isEmpty && additionalProtocols.isEmpty {
+			if verbsProtocols.isEmpty, additionalProtocols.isEmpty {
 				return  renderedMain + " {"
 			} else if additionalProtocols.isEmpty {
 				return renderedMain + ",\n\t\t" + renderedVerbs + "\n\t{"

@@ -198,7 +198,7 @@ let APIGroups = [
 	"resource.k8s.io":                "Resource",
 	"scheduling.k8s.io":              "Scheduling",
 	"storage.k8s.io":                 "Storage",
-	"storagemigration.k8s.io":        "StorageVersionMigration"
+	"storagemigration.k8s.io":        "StorageVersionMigration",
 ]
 
 let Keywords = Set(["continue", "default", "internal", "operator", "protocol"])

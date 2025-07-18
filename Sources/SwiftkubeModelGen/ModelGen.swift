@@ -16,7 +16,7 @@
 
 import Foundation
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 import ArgumentParser
 import PathKit
@@ -41,10 +41,10 @@ struct ModelGen: ParsableCommand {
 	var output: String
 
 	@Option(name: .shortAndLong, help: "Schema output directory")
-	var schemaOutput: String = "/tmp/swiftkube"
+	var schemaOutput = "/tmp/swiftkube"
 
 	@Flag(help: "Clear output directory")
-	var clear: Bool = false
+	var clear = false
 
 	mutating func run() throws {
 		let templatesPath = Path(templates).absolute()
@@ -77,7 +77,7 @@ struct ModelGen: ParsableCommand {
 			RenderTemplate(environment: environment, template: GroupVersionResourceAPIResourceTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionResourceDefaultResourcesTemplate()),
 			RenderTemplate(environment: environment, template: GroupVersionResourceMetaTemplate()),
-			RenderResources(environment: environment)
+			RenderResources(environment: environment),
 		])
 		.process(basePath: outputPath, context: context)
 	}
@@ -89,7 +89,7 @@ struct ModelGen: ParsableCommand {
 		var gvks = [GroupVersionKind]()
 		var resources = [ResourceContext]()
 
-		schema.definitions.forEach { key, resource in
+		for (key, resource) in schema.definitions {
 			if resource.isAPIResource, let gvk = resource.gvk {
 				gvks.append(gvk)
 			}

@@ -17,6 +17,8 @@
 import Foundation
 import PathKit
 
+// MARK: - GroupVersionKindResourceNameTemplate
+
 struct GroupVersionKindResourceNameTemplate: TemplateType {
 
 	let stencilTemplate = "GroupVersionKind+ResourceName.swift.stencil"
@@ -25,6 +27,8 @@ struct GroupVersionKindResourceNameTemplate: TemplateType {
 		basePath + Path("GroupVersionKind+ResourceName.swift")
 	}
 }
+
+// MARK: - GroupVersionKindDefaultResourcesTemplate
 
 struct GroupVersionKindDefaultResourcesTemplate: TemplateType {
 
@@ -35,6 +39,8 @@ struct GroupVersionKindDefaultResourcesTemplate: TemplateType {
 	}
 }
 
+// MARK: - GroupVersionKindAPIResourceTemplate
+
 struct GroupVersionKindAPIResourceTemplate: TemplateType {
 
 	let stencilTemplate = "GroupVersionKind+KubernetesAPIResource.swift.stencil"
@@ -43,6 +49,8 @@ struct GroupVersionKindAPIResourceTemplate: TemplateType {
 		basePath + Path("GroupVersionKind+KubernetesAPIResource.swift")
 	}
 }
+
+// MARK: - GroupVersionKindMetaTemplate
 
 struct GroupVersionKindMetaTemplate: TemplateType {
 
@@ -53,6 +61,8 @@ struct GroupVersionKindMetaTemplate: TemplateType {
 	}
 }
 
+// MARK: - GroupVersionResourceResourceNameTemplate
+
 struct GroupVersionResourceResourceNameTemplate: TemplateType {
 
 	let stencilTemplate = "GroupVersionResource+ResourceName.swift.stencil"
@@ -61,6 +71,8 @@ struct GroupVersionResourceResourceNameTemplate: TemplateType {
 		basePath + Path("GroupVersionResource+ResourceName.swift")
 	}
 }
+
+// MARK: - GroupVersionResourceAPIResourceTemplate
 
 struct GroupVersionResourceAPIResourceTemplate: TemplateType {
 
@@ -71,6 +83,8 @@ struct GroupVersionResourceAPIResourceTemplate: TemplateType {
 	}
 }
 
+// MARK: - GroupVersionResourceDefaultResourcesTemplate
+
 struct GroupVersionResourceDefaultResourcesTemplate: TemplateType {
 
 	let stencilTemplate = "GroupVersionResource+DefaultResources.swift.stencil"
@@ -80,6 +94,8 @@ struct GroupVersionResourceDefaultResourcesTemplate: TemplateType {
 	}
 }
 
+// MARK: - GroupVersionResourceMetaTemplate
+
 struct GroupVersionResourceMetaTemplate: TemplateType {
 
 	let stencilTemplate = "GroupVersionResource+Meta.swift.stencil"
@@ -88,6 +104,8 @@ struct GroupVersionResourceMetaTemplate: TemplateType {
 		basePath + Path("GroupVersionResource+Meta.swift")
 	}
 }
+
+// MARK: - GroupTemplate
 
 struct GroupTemplate: TemplateType {
 
@@ -103,6 +121,8 @@ struct GroupTemplate: TemplateType {
 	}
 }
 
+// MARK: - VersionTemplate
+
 struct VersionTemplate: TemplateType {
 
 	let stencilTemplate = "Version.swift.stencil"
@@ -110,15 +130,17 @@ struct VersionTemplate: TemplateType {
 
 	func destination(basePath: Path) -> Path {
 		basePath
-				+ Path(typeReference.group)
-				+ Path(typeReference.version)
-				+ Path("\(typeReference.group)+\(typeReference.version).swift")
+			+ Path(typeReference.group)
+			+ Path(typeReference.version)
+			+ Path("\(typeReference.group)+\(typeReference.version).swift")
 	}
 
 	func stencilContext() -> [String: Any] {
 		["type": typeReference]
 	}
 }
+
+// MARK: - ResourceTemplate
 
 struct ResourceTemplate: TemplateType {
 
@@ -128,18 +150,20 @@ struct ResourceTemplate: TemplateType {
 
 	func destination(basePath: Path) -> Path {
 		basePath
-				+ Path(typeReference.group)
-				+ Path(typeReference.version)
-				+ Path("\(typeReference.kind)+\(typeReference.group).\(typeReference.version).swift")
+			+ Path(typeReference.group)
+			+ Path(typeReference.version)
+			+ Path("\(typeReference.kind)+\(typeReference.group).\(typeReference.version).swift")
 	}
 
 	func stencilContext() -> [String: Any] {
 		[
 			"type": typeReference,
-			"resource": resource
+			"resource": resource,
 		]
 	}
 }
+
+// MARK: - ClientAPIDSLTemplate
 
 struct ClientAPIDSLTemplate: TemplateType {
 
@@ -151,15 +175,15 @@ struct ClientAPIDSLTemplate: TemplateType {
 		let shortGroupName = String(groupVersion.group.prefix(while: { $0 != "." }))
 
 		return basePath
-				+ Path("client")
-				+ Path("DSL")
-				+ Path("KubernetesClient+\(shortGroupName).\(groupVersion.version).swift")
+			+ Path("client")
+			+ Path("DSL")
+			+ Path("KubernetesClient+\(shortGroupName).\(groupVersion.version).swift")
 	}
 
 	func stencilContext() -> [String: Any] {
 		[
 			"groupVersion": groupVersion,
-			"resources": resources
+			"resources": resources,
 		]
 	}
 }

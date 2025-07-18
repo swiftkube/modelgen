@@ -41,7 +41,7 @@ class JSONSchemaProcessor {
 		let definitionsPath = jsonSchemaPath + Path("_definitions.json")
 
 		if definitionsPath.exists {
-			print("Found schema for \(apiVersion) at: \(outputPath)")
+			print("Found schema for \(apiVersion) at: \(jsonSchemaPath)")
 			return definitionsPath
 		}
 

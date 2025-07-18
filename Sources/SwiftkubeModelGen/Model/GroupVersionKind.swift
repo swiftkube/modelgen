@@ -105,7 +105,7 @@ struct GroupVersionKind: Decodable, Hashable {
 
 extension GroupVersionKind: Comparable {
 
-	static func <(lhs: GroupVersionKind, rhs: GroupVersionKind) -> Bool {
+	static func < (lhs: GroupVersionKind, rhs: GroupVersionKind) -> Bool {
 		switch (lhs, rhs) {
 		case let (lhs, rhs) where lhs.group < rhs.group:
 			return true
@@ -165,11 +165,13 @@ extension String {
 	}
 
 	func variableName(with plural: String) -> String {
-		let common = self.commonPrefix(with: plural, options: .caseInsensitive)
+		let common = commonPrefix(with: plural, options: .caseInsensitive)
 		let idx = plural.index(plural.startIndex, offsetBy: common.count)
 		return common + plural.suffix(from: idx)
 	}
 }
+
+// MARK: - GroupVersion
 
 struct GroupVersion: Decodable, Hashable {
 

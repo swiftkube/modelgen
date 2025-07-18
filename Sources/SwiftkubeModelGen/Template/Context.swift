@@ -17,6 +17,8 @@
 import Foundation
 import PathKit
 
+// MARK: - TemplateType
+
 protocol TemplateType {
 	var stencilTemplate: String { get }
 	func destination(basePath: Path) -> Path
@@ -29,14 +31,20 @@ extension TemplateType {
 	}
 }
 
+// MARK: - MetaContext
+
 struct MetaContext {
 	let modelVersion: String
 }
+
+// MARK: - ResourceContext
 
 struct ResourceContext {
 	let resource: Resource
 	let typeReference: TypeReference
 }
+
+// MARK: - TemplateContext
 
 struct TemplateContext {
 	let meta: MetaContext
@@ -44,16 +52,16 @@ struct TemplateContext {
 	let resources: [ResourceContext]
 
 	func stencilContext() -> [String: Any] {
-		let newestGroupVersionKinds = groupVersionKinds.removeDuplicates {$0.kind}
+		let newestGroupVersionKinds = groupVersionKinds.removeDuplicates { $0.kind }
 
 		return [
-					"meta": ["modelVersion": meta.modelVersion],
-					"groupVersionKinds": groupVersionKinds,
-					"newestGroupVersionKinds": newestGroupVersionKinds,
-					"pluralGroupVersionKinds": newestGroupVersionKinds.filter { gvk in PluralNames.keys.contains(gvk.kind) },
-					"shortGroupVersionKinds": newestGroupVersionKinds.filter { gvk in ShortNames.keys.contains(gvk.kind) },
-					"resources": resources
-				]
+			"meta": ["modelVersion": meta.modelVersion],
+			"groupVersionKinds": groupVersionKinds,
+			"newestGroupVersionKinds": newestGroupVersionKinds,
+			"pluralGroupVersionKinds": newestGroupVersionKinds.filter { gvk in PluralNames.keys.contains(gvk.kind) },
+			"shortGroupVersionKinds": newestGroupVersionKinds.filter { gvk in ShortNames.keys.contains(gvk.kind) },
+			"resources": resources,
+		]
 	}
 }
 
