@@ -127,7 +127,12 @@ indirect enum PropertyType: Equatable {
 		case let .array(itemType: subtype):
 			return "[\(subtype.renderedType)]"
 		case let .map(valueType: subtype):
-			return "[String: \(subtype.renderedType)]"
+			let type = "[String: \(subtype.renderedType)]"
+			return if (type == "[String: JSONField]") {
+				"JSONObject"
+			} else {
+				type
+			}
 		case let .ref(typeRef: typeReference):
 			switch typeReference.ref {
 			case let ref where ManualTypes.contains(ref):
