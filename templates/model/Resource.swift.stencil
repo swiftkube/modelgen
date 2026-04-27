@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Swiftkube Project
+// Copyright 2020-2026 Swiftkube Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,11 @@
 /// {{ type.group }}.{{ type.version }}.{{ type.kind }}
 ///
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 // MARK: - {{ type.group|P.escapeKeywords }}.{{ type.version }}.{{ type.kind }}
 

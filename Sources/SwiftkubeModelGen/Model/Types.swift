@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Swiftkube Project
+// Copyright 2020-2026 Swiftkube Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
 // limitations under the License.
 //
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
-let TypePrefixes = Set([
-	"apiserver",
-	"io.k8s.api.",
-	"io.k8s.api.apiserver",
+let TypePrefixes = [
 	"io.k8s.apiextensions-apiserver.pkg.apis.",
 	"io.k8s.apimachinery.pkg.apis.",
 	"io.k8s.kube-aggregator.pkg.apis.",
-])
+	"io.k8s.api.apiserver",
+	"io.k8s.api.",
+	"apiserver",
+]
 
 let ManualTypes = Set([
 	"io.k8s.apimachinery.pkg.api.resource.Quantity",
@@ -100,6 +104,7 @@ let PluralNames = [
 	"PersistentVolume":                 "persistentvolumes",
 	"PersistentVolumeClaim":            "persistentvolumeclaims",
 	"Pod":                              "pods",
+	"PodCertificateRequest":            "podcertificaterequests",
 	"PodDisruptionBudget":              "poddisruptionbudgets",
 	"PodMetrics":                       "pods",
 	"PodPreset":                        "podpresets",
@@ -139,6 +144,7 @@ let PluralNames = [
 	"ValidatingWebhookConfiguration":   "validatingwebhookconfigurations",
 	"VolumeAttachment":                 "volumeattachments",
 	"VolumeAttributesClass":            "volumeattributesclasses",
+	"Workload":                         "workloads",
 ]
 
 let ShortNames = [

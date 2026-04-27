@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Swiftkube Project
+// Copyright 2020-2026 Swiftkube Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
 // limitations under the License.
 //
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import SwiftkubeModel
 
 // MARK: - {{ groupVersion|GV.type }}API
 
 public protocol {{ groupVersion|GV.type }}API: Sendable {
 {% for resource in resources %}
-	var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> { get }{% endfor %}
+	var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<SwiftkubeModel.{{ resource.gvk|GVK.type }}> { get }{% endfor %}
 }
 
 /// DSL for `{{ groupVersion|GV.raw }}` API Group
@@ -34,8 +38,8 @@ public extension KubernetesClient {
 			self.client = client
 		}
 {% for resource in resources %}
-		public var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<{{ resource.gvk|GVK.type }}> {
-			client.{% if resource.isNamespaced %}namespaceScoped{% else %}clusterScoped{% endif%}(for: {{ resource.gvk|GVK.type }}.self)
+		public var {{ resource.gvk|GVK.pluralVariable }}: {% if resource.isNamespaced %}NamespacedGenericKubernetesClient{% else %}ClusterScopedGenericKubernetesClient{% endif %}<SwiftkubeModel.{{ resource.gvk|GVK.type }}> {
+			client.{% if resource.isNamespaced %}namespaceScoped{% else %}clusterScoped{% endif%}(for: SwiftkubeModel.{{ resource.gvk|GVK.type }}.self)
 		}{% endfor %}
 	}
 
